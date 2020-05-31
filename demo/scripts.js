@@ -1,4 +1,4 @@
-const JSCanv = new JSCanvas(document.getElementById("canv"));
+const JSCanv = new JSMemoryCanvas(document.getElementById("canv"));
 JSCanv.toggleVerbose(true);
 var mode = "start";
 
