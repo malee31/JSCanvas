@@ -1,0 +1,6 @@
+# Credential and Testing Files
+testing/
+
+# Vim Swap Files
+*.swo
+*.swp
