@@ -81,6 +81,10 @@ class JSCanvas
 				this.verboseLog("LINE");
 				this.line(...args);
 			break;
+			case "IMG":
+			case "IMAGE":
+				this.img(...args);
+			break;
 			default:
 				this.verboseLog("Invalid shape input entered");
 			break;
@@ -110,6 +114,23 @@ class JSCanvas
 		this.ctx.stroke();
 	}
 
+	img(image, ...positioning)
+	{
+		if(typeof image == "string")
+		{
+			var newImg = new Image();
+			newImg.addEventListener("load", generatedImage => {
+				this.ctx.drawImage(generatedImage, ...positioning);
+			})
+			newImg.src = image;
+			newImg.alt = image;
+		}
+		else
+		{
+			this.ctx.drawImage(image, ...positioning);
+		}
+	}
+
 	clear()
 	{
 		this.ctx.clearRect(0, 0, this.width, this.height);
@@ -118,30 +139,28 @@ class JSCanvas
 	fill(color)
 	{
 		color = color ? color.toUpperCase() : null;
-		this.verboseLog(color);
 		if(color && color.match(/^#([0-9A-Z]{3}){1,2}$/))
 		{
-			this.verboseLog("Color set successfully");
+			this.verboseLog("Color set successfully", color);
 			this.ctx.fillStyle = color;
 		}
 		else
 		{
-			this.verboseLog("Invalid color format. Use Hexidecimal.");
+			this.verboseLog("Invalid color format. Use Hexidecimal.", color);
 		}
 	}
 
 	stroke(color)
 	{
 		color = color ? color.toUpperCase() : null;
-		this.verboseLog(color);
 		if(color && color.match(/^#([0-9A-Z]{3}){1,2}$/))
 		{
-			this.verboseLog("Stroke set successfully");
+			this.verboseLog("Stroke set successfully", color);
 			this.ctx.strokeStyle = color;
 		}
 		else
 		{
-			this.verboseLog("Invalid color format. Use Hexidecimal.");
+			this.verboseLog("Invalid color format. Use Hexidecimal.", color);
 		}
 	}
 
@@ -153,6 +172,7 @@ class JSCanvas
 	strokeColor(...args) { this.stroke(...args); }
 	rectangle(...args) { this.rect(...args); }
 	circle(...args) { this.circ(...args); }
+	image(...args) { this.img(...args); }
 	ln(...args) { this.line(...args); }
 
 	//Debug mode

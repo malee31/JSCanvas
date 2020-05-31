@@ -3,9 +3,7 @@ class JSMemoryCanvas extends JSCanvas
 	constructor(canv)
 	{
 		super(canv);
-		this.verboseLog("JSMemoryCanvas Created");
 		this.restoreAllDefaults();
-		this.history.push(["RECT", 0, 0, 500, 500, "#000"]);
 	}
 
 	restoreAllDefaults()
@@ -16,30 +14,46 @@ class JSMemoryCanvas extends JSCanvas
 
 	redraw(drawGroup)
 	{
+		this.verboseLog("Redrawing");
 		for(let memory of this.history)
 		{
-			this.draw(memory.shift(), ...memory);
+			var drawMethod = memory.shift();
+			super.draw(drawMethod, ...memory);
+			memory.unshift(drawMethod);
 		}
+		this.verboseLog("History contents", this.history);
 	}
 
 	rect(...args)
 	{
-		args.unshift("RECT");
-		args.shift();
-		super.rect(...args);
+		this.historyPusher("RECT", args);
+		super.rect(...args.slice(0, args.length - 1));
 	}
 
 	circ(...args)
 	{
-		args.unshift("CIRC");
-		args.shift();
-		super.rect(...args);
+		this.historyPusher("CIRC", args);
+		super.circ(...args.slice(0, args.length - 1));
 	}
 
 	line(...args)
 	{
-		args.unshift("LINE");
+		this.historyPusher("LINE", args);
+		super.line(...args.slice(0, args.length - 1));
+	}
+
+	img(...args)
+	{
+		this.historyPusher("IMG", args);
+		super.img(...args.slice(0, args.length - 1));
+	}
+
+	historyPusher(methodName, args)
+	{
+		if(args[args.length - 1] === true) return;
+		args.unshift(methodName);
+		args.push(true);
+		this.history.push(args.slice());
 		args.shift();
-		super.rect(...args);
 	}
 }
