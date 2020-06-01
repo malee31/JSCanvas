@@ -21,7 +21,7 @@ class JSMemoryCanvas extends JSCanvas
 	{
 		if(typeof inputs != "object")
 		{
-			this.verboseLog("Incompatible feed type");
+			this.verboseLog(2, "Incompatible feed type");
 			return;
 		}
 		if(typeof inputs[0] == "object")
@@ -35,13 +35,13 @@ class JSMemoryCanvas extends JSCanvas
 
 	redraw(drawGroup)
 	{
-		this.verboseLog("Redrawing");
+		this.verboseLog(1000, "Redrawing");
 		for(let memory of this.history)
 		{
-			this.verboseLog("Memory Redrawing: ", memory);
+			this.verboseLog(1000, "Memory Redrawing: ", memory);
 			super.draw(memory[0], memory.slice(1));
 		}
-		this.verboseLog("History contents", this.history);
+		this.verboseLog(3, "History contents", this.history);
 	}
 
 	rect(...args)
@@ -71,7 +71,7 @@ class JSMemoryCanvas extends JSCanvas
 	historyPusher(methodName, args)
 	{
 		if(args.length > 0 && typeof args[0] == "object") return;
-		this.verboseLog("History Pushing: ", args);
+		this.verboseLog(3, "History Pushing: ", args);
 		args.unshift(methodName);
 		this.history.push(args.slice());
 		args.shift();

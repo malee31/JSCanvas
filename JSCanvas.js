@@ -3,6 +3,17 @@ class JSCanvas
 	constructor(canv)
 	{
 		this.canvas = canv;
+		this.ctx = canv.getContext("2d");
+		window.addEventListener("resize", () => {
+			this.updateResizers();
+		})
+		this.attachMouseHandlers();
+		this.restoreAllDefaults();
+		this.updateResizers();
+	}
+
+	attachMouseHandlers()
+	{
 		this.cursor = {
 			x: 0,
 			y: 0,
@@ -11,7 +22,7 @@ class JSCanvas
 			relativeDrawing: []
 		};
 		this.canvas.addEventListener("mousemove", e => {
-			this.verboseLog("Mouse position: ", [e.clientX, e.clientY]);
+			this.verboseLog(1000, "Mouse position: ", [e.clientX, e.clientY]);
 			var canvasBound = this.canvas.getBoundingClientRect();
 			this.cursor["x"] = this.cursor.scale * e.clientX - canvasBound.left
 			this.cursor["y"] = this.cursor.scale * e.clientY - canvasBound.top;
@@ -25,17 +36,20 @@ class JSCanvas
 			this.cursor.mouseClicked = true;
 			this.cursor.mouseDown = false;
 		});
-		this.ctx = canv.getContext("2d");
-		this.restoreAllDefaults();
-		this.updateMetadata();
 	}
 
-	updateMetadata()
+	updateResizers()
 	{
+		//TODO: actually cap the max size to comply with browser limitations
+		if(typeof this.defaultDimensions != "object")
+		{
+			this.verboseLog(1, "reset Dimensions");
+			this.defaultDimensions = {width: this.canvas.width, height: this.canvas.height};
+		}
 		//Fixes Aspect Ratio
-		this.canvas.width = this.canvas.height * (this.canvas.clientWidth / this.canvas.clientHeight);
+		this.canvas.width = this.defaultDimensions["height"] * (this.canvas.clientWidth / this.canvas.clientHeight);
 		this.canvas.width *= this.resolutionScale;
-		this.canvas.height *= this.resolutionScale;
+		this.canvas.height = this.defaultDimensions["height"] * this.resolutionScale;
 		this.cursor.scale = this.width / this.canvas.clientWidth;
 	}
 
@@ -88,10 +102,10 @@ class JSCanvas
 		if(typeof cb == "function")
 		{
 			this.action = cb;
-			this.verboseLog("Action set");
+			this.verboseLog(3, "Action set");
 			return;
 		}
-		this.verboseLog("Not a function");
+		this.verboseLog(2, "Not a function");
 	}
 
 	scalePixel(val)
@@ -121,10 +135,10 @@ class JSCanvas
 				this.img(...args);
 			break;
 			default:
-				this.verboseLog("Invalid shape input entered");
+				this.verboseLog(2, "Invalid shape input entered");
 			break;
 		}
-		this.verboseLog(shape, args);
+		this.verboseLog(1000, shape, args);
 	}
 
 	rect(x, y, width, height, color, method)
@@ -178,12 +192,12 @@ class JSCanvas
 		color = color ? color.toUpperCase() : null;
 		if(color && color.match(/^#([0-9A-Z]{3}){1,2}$/))
 		{
-			this.verboseLog("Color set successfully", color);
+			this.verboseLog(3, "Color set successfully", color);
 			this.ctx.fillStyle = color;
 		}
 		else
 		{
-			this.verboseLog("Invalid color format. Use Hexidecimal.", color);
+			this.verboseLog(2, "Invalid color format. Use Hexidecimal.", color);
 		}
 	}
 
@@ -192,12 +206,12 @@ class JSCanvas
 		color = color ? color.toUpperCase() : null;
 		if(color && color.match(/^#([0-9A-Z]{3}){1,2}$/))
 		{
-			this.verboseLog("Stroke set successfully", color);
+			this.verboseLog(3, "Stroke set successfully", color);
 			this.ctx.strokeStyle = color;
 		}
 		else
 		{
-			this.verboseLog("Invalid color format. Use Hexidecimal.", color);
+			this.verboseLog(2, "Invalid color format. Use Hexidecimal.", color);
 		}
 	}
 
@@ -223,14 +237,27 @@ class JSCanvas
 	s(arg) { this.scalePixel(arg); }
 
 	//Debug mode
-	toggleVerbose(toggle)
+	toggleVerbose(level, toggle)
 	{
+		this.logLevel = typeof level == "number" ? level : 1000;
 		if(typeof toggle == "boolean") this.toggle = toggle;
 		else this.toggle = !this.toggle;
 	}
 
-	verboseLog(message, ...additional)
+	/*
+	 * A function used for logging messages while debugging.
+	 * Has multiple levels for amounts of spam:
+	 * 1: Temporary Debugging
+	 * 2: Failure Logs
+	 * 3. Success Logs
+	 * 1000. Excessive logging
+	 * @param {number} logLevel Minimum level required to show
+	 * @param {string} message Message displayed by log
+	 * @param {*} additional Items to append to log
+	**/
+	verboseLog(logLevel, message, ...additional)
 	{
+		if(logLevel > this.logLevel) return;
 		if(this.toggle)
 		{
 			switch(additional.length)
