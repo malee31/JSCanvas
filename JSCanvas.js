@@ -22,17 +22,17 @@ class JSCanvas
 			relativeDrawing: []
 		};
 		this.canvas.addEventListener("mousemove", e => {
-			this.verboseLog(1000, "Mouse position: ", [e.clientX, e.clientY]);
+			this.verboseLog(1000, "Mouse Position: ", [e.clientX, e.clientY]);
 			var canvasBound = this.canvas.getBoundingClientRect();
 			this.cursor["x"] = this.cursor.scale * e.clientX - canvasBound.left
 			this.cursor["y"] = this.cursor.scale * e.clientY - canvasBound.top;
 		});
 		this.canvas.addEventListener("mousedown", e => {
-			console.log("Mouse Down", e);
+			console.log("Mouse Down: ", e);
 			this.cursor.mouseDown = true;
 		});
 		this.canvas.addEventListener("mouseup", e => {
-			console.log("Mouse Up", e);
+			console.log("Mouse Up: ", e);
 			this.cursor.mouseClicked = true;
 			this.cursor.mouseDown = false;
 		});
@@ -40,10 +40,10 @@ class JSCanvas
 
 	updateResizers()
 	{
-		//TODO: actually cap the max size to comply with browser limitations
+		//TODO: Actually cap the max size to comply with browser limitations
 		if(typeof this.defaultDimensions != "object")
 		{
-			this.verboseLog(1, "reset Dimensions");
+			this.verboseLog(1, "Reset Dimensions");
 			this.defaultDimensions = {width: this.canvas.width, height: this.canvas.height};
 		}
 		//Fixes Aspect Ratio
@@ -102,10 +102,10 @@ class JSCanvas
 		if(typeof cb == "function")
 		{
 			this.action = cb;
-			this.verboseLog(3, "Action set");
+			this.verboseLog(3, "action set");
 			return;
 		}
-		this.verboseLog(2, "Not a function");
+		this.verboseLog(2, "not a function");
 	}
 
 	scalePixel(val)
@@ -135,7 +135,7 @@ class JSCanvas
 				this.img(...args);
 			break;
 			default:
-				this.verboseLog(2, "Invalid shape input entered");
+				this.verboseLog(2, "Invalid Shape Input Entered");
 			break;
 		}
 		this.verboseLog(1000, shape, args);
@@ -188,31 +188,29 @@ class JSCanvas
 
 	fill(color)
 	{
+		color = this.isColor(color)
 		if(!color) return;
-		color = color ? color.toUpperCase() : null;
-		if(color && color.match(/^#([0-9A-Z]{3}){1,2}$/))
-		{
-			this.verboseLog(3, "Color set successfully", color);
-			this.ctx.fillStyle = color;
-		}
-		else
-		{
-			this.verboseLog(2, "Invalid color format. Use Hexidecimal.", color);
-		}
+		this.ctx.fillStyle = color;
+		this.verboseLog(3, "Fill color set successfully", color);
 	}
 
 	stroke(color)
 	{
-		color = color ? color.toUpperCase() : null;
-		if(color && color.match(/^#([0-9A-Z]{3}){1,2}$/))
+		color = this.isColor(color)
+		if(!color) return;
+		this.ctx.strokeStyle = color;
+		this.verboseLog(3, "Stroke color set successfully", color);
+	}
+
+	isColor(color)
+	{
+		if(!color) return null;
+		if(typeof color != "string" || !color.toUpperCase().match(/^#([0-9A-Z]{3}){1,2}$/))
 		{
-			this.verboseLog(3, "Stroke set successfully", color);
-			this.ctx.strokeStyle = color;
+			this.verboseLog(2, "Invalid color format. Use hexidecimal.", color);
+			return null;
 		}
-		else
-		{
-			this.verboseLog(2, "Invalid color format. Use Hexidecimal.", color);
-		}
+		return color.toUpperCase();
 	}
 
 	get height() { return this.canvas.height; }

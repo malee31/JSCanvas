@@ -3,6 +3,10 @@ class JSMemoryCanvas extends JSCanvas
 	constructor(canv)
 	{
 		super(canv);
+		window.addEventListener("resize", () => {
+			this.updateResizers();
+			this.redraw();
+		})
 		this.restoreAllDefaults();
 	}
 
@@ -19,17 +23,15 @@ class JSMemoryCanvas extends JSCanvas
 
 	feed(inputs)
 	{
-		if(typeof inputs != "object")
+		if(!Array.isArray(inputs))
 		{
 			this.verboseLog(2, "Incompatible feed type");
 			return;
 		}
-		if(typeof inputs[0] == "object")
+		if(!Array.isArray(inputs[0])) inputs = [inputs];
+		for(let input of inputs)
 		{
-			for(let input of inputs)
-			{
-				this.history.push(input.slice());
-			}
+			this.history.push(input.slice());
 		}
 	}
 
