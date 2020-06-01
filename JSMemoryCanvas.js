@@ -12,14 +12,34 @@ class JSMemoryCanvas extends JSCanvas
 		super.restoreAllDefaults();
 	}
 
+	forget()
+	{
+		this.history = [];
+	}
+
+	feed(inputs)
+	{
+		if(typeof inputs != "object")
+		{
+			this.verboseLog("Incompatible feed type");
+			return;
+		}
+		if(typeof inputs[0] == "object")
+		{
+			for(let input of inputs)
+			{
+				this.history.push(input.slice());
+			}
+		}
+	}
+
 	redraw(drawGroup)
 	{
 		this.verboseLog("Redrawing");
 		for(let memory of this.history)
 		{
-			var drawMethod = memory.shift();
-			super.draw(drawMethod, ...memory);
-			memory.unshift(drawMethod);
+			this.verboseLog("Memory Redrawing: ", memory);
+			super.draw(memory[0], memory.slice(1));
 		}
 		this.verboseLog("History contents", this.history);
 	}
@@ -50,9 +70,9 @@ class JSMemoryCanvas extends JSCanvas
 
 	historyPusher(methodName, args)
 	{
-		if(args[args.length - 1] === true) return;
+		if(args.length > 0 && typeof args[0] == "object") return;
+		this.verboseLog("History Pushing: ", args);
 		args.unshift(methodName);
-		args.push(true);
 		this.history.push(args.slice());
 		args.shift();
 	}

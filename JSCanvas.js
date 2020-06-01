@@ -3,8 +3,27 @@ class JSCanvas
 	constructor(canv)
 	{
 		this.canvas = canv;
-		this.canvas.addEventListener("resize", () => {
-			console.log("Resized");
+		this.cursor = {
+			x: 0,
+			y: 0,
+			mouseDown: false,
+			mouseClicked: false,
+			relativeDrawing: []
+		};
+		this.canvas.addEventListener("mousemove", e => {
+			this.verboseLog("Mouse position: ", [e.clientX, e.clientY]);
+			var canvasBound = this.canvas.getBoundingClientRect();
+			this.cursor["x"] = this.cursor.scale * e.clientX - canvasBound.left
+			this.cursor["y"] = this.cursor.scale * e.clientY - canvasBound.top;
+		});
+		this.canvas.addEventListener("mousedown", e => {
+			console.log("Mouse Down", e);
+			this.cursor.mouseDown = true;
+		});
+		this.canvas.addEventListener("mouseup", e => {
+			console.log("Mouse Up", e);
+			this.cursor.mouseClicked = true;
+			this.cursor.mouseDown = false;
 		});
 		this.ctx = canv.getContext("2d");
 		this.restoreAllDefaults();
@@ -17,6 +36,7 @@ class JSCanvas
 		this.canvas.width = this.canvas.height * (this.canvas.clientWidth / this.canvas.clientHeight);
 		this.canvas.width *= this.resolutionScale;
 		this.canvas.height *= this.resolutionScale;
+		this.cursor.scale = this.width / this.canvas.clientWidth;
 	}
 
 	restoreDefaults()
@@ -46,6 +66,8 @@ class JSCanvas
 
 	sanityCheck()
 	{
+		if(typeof this.action == "function") this.action();
+		this.cursor.mouseClicked = false;
 		if(this.timeout > 0)
 		{
 			setTimeout(requestAnimationFrame, this.timeout, this.sanityCheck.bind(this));
@@ -61,6 +83,22 @@ class JSCanvas
 		this.counter = (this.counter + 1) % this.timerLoop;
 	}
 
+	setAction(cb)
+	{
+		if(typeof cb == "function")
+		{
+			this.action = cb;
+			this.verboseLog("Action set");
+			return;
+		}
+		this.verboseLog("Not a function");
+	}
+
+	scalePixel(val)
+	{
+		return val * this.resolutionScale;
+	}
+
 	draw(shape, ...args)
 	{
 		shape = shape.toUpperCase().trim();
@@ -68,17 +106,14 @@ class JSCanvas
 		{
 			case "RECT":
 			case "RECTANGLE":
-				this.verboseLog("RECT");
 				this.rect(...args);
 			break;
 			case "CIRC":
 			case "CIRCLE":
-				this.verboseLog("CIRC");
 				this.circ(...args);
 			break;
 			case "LN":
 			case "LINE":
-				this.verboseLog("LINE");
 				this.line(...args);
 			break;
 			case "IMG":
@@ -89,6 +124,7 @@ class JSCanvas
 				this.verboseLog("Invalid shape input entered");
 			break;
 		}
+		this.verboseLog(shape, args);
 	}
 
 	rect(x, y, width, height, color, method)
@@ -138,6 +174,7 @@ class JSCanvas
 
 	fill(color)
 	{
+		if(!color) return;
 		color = color ? color.toUpperCase() : null;
 		if(color && color.match(/^#([0-9A-Z]{3}){1,2}$/))
 		{
@@ -166,6 +203,14 @@ class JSCanvas
 
 	get height() { return this.canvas.height; }
 	get width(){ return this.canvas.width; }
+	//Alias for width and height not made yet
+	get centerX(){ return this.width / 2; }
+	get centerY(){ return this.height / 2; }
+	get center() { return [this.width / 2, this.height / 2]; }
+	//No alias
+	get mouseX(){ return this.cursor["x"]; }
+	get mouseY(){ return this.cursor["y"]; }
+	get mouse(){ return this.cursor; }
 
 	//Aliases
 	fillColor(...args) { this.fill(...args); }
@@ -174,6 +219,8 @@ class JSCanvas
 	circle(...args) { this.circ(...args); }
 	image(...args) { this.img(...args); }
 	ln(...args) { this.line(...args); }
+	scale(arg) { this.scalePixel(arg); }
+	s(arg) { this.scalePixel(arg); }
 
 	//Debug mode
 	toggleVerbose(toggle)
