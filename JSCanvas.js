@@ -24,8 +24,8 @@ class JSCanvas
 		this.canvas.addEventListener("mousemove", e => {
 			this.verboseLog(1000, "Mouse Position: ", [e.clientX, e.clientY]);
 			var canvasBound = this.canvas.getBoundingClientRect();
-			this.cursor["x"] = this.cursor.scale * e.clientX - canvasBound.left
-			this.cursor["y"] = this.cursor.scale * e.clientY - canvasBound.top;
+			this.cursor["x"] = this.cursor.scale * (e.clientX - canvasBound.left);
+			this.cursor["y"] = this.cursor.scale * (e.clientY - canvasBound.top);
 		});
 		this.canvas.addEventListener("mousedown", e => {
 			console.log("Mouse Down: ", e);
