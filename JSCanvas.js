@@ -15,8 +15,8 @@ class JSCanvas
 	attachMouseHandlers()
 	{
 		this.cursor = {
-			x: 0,
-			y: 0,
+			x: -999,
+			y: -999,
 			mouseDown: false,
 			mouseClicked: false,
 			relativeDrawing: []
@@ -28,11 +28,11 @@ class JSCanvas
 			this.cursor["y"] = this.cursor.scale * (e.clientY - canvasBound.top);
 		});
 		this.canvas.addEventListener("mousedown", e => {
-			console.log("Mouse Down: ", e);
+			this.verboseLog(3, "Mouse Down: ", e);
 			this.cursor.mouseDown = true;
 		});
 		this.canvas.addEventListener("mouseup", e => {
-			console.log("Mouse Up: ", e);
+			this.verboseLog(3, "Mouse Up: ", e);
 			this.cursor.mouseClicked = true;
 			this.cursor.mouseDown = false;
 		});
@@ -43,7 +43,7 @@ class JSCanvas
 		//TODO: Actually cap the max size to comply with browser limitations
 		if(typeof this.defaultDimensions != "object")
 		{
-			this.verboseLog(1, "Reset Dimensions");
+			this.verboseLog(3, "Reset Dimensions");
 			this.defaultDimensions = {width: this.canvas.width, height: this.canvas.height};
 		}
 		//Fixes Aspect Ratio
@@ -149,6 +149,7 @@ class JSCanvas
 
 	circ(x, y, r, color)
 	{
+		this.verboseLog(1000, "Supered", x, y, r);
 		this.fillColor(color);
 		this.ctx.beginPath();
 		this.ctx.arc(x, y, r, 0, 2 * Math.PI);
