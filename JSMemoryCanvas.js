@@ -21,7 +21,7 @@ class JSMemoryCanvas extends JSCanvas
 		this.history = [];
 	}
 
-	feed(inputs)
+	feed(inputs, softFeed)
 	{
 		if(!Array.isArray(inputs))
 		{
@@ -31,7 +31,8 @@ class JSMemoryCanvas extends JSCanvas
 		if(!Array.isArray(inputs[0])) inputs = [inputs];
 		for(let input of inputs)
 		{
-			this.history.push(input.slice());
+			if(softFeed) this.history.push(input.slice());
+			else this.softDraw(input.slice());
 		}
 	}
 
@@ -44,6 +45,33 @@ class JSMemoryCanvas extends JSCanvas
 			super.draw(memory[0], [memory.slice(1)]);
 		}
 		this.verboseLog(3, "History contents", this.history);
+	}
+
+	softDraw(fed)
+	{
+		switch(fed[0].toUpperCase().trim())
+		{
+			case "RECT":
+			case "RECTANGLE":
+				super.rect(...fed.slice(1));
+			break;
+			case "CIRC":
+			case "CIRCLE":
+				super.circ(...fed.slice(1));
+			break;
+			case "LN":
+			case "LINE":
+				super.line(...fed.slice(1));
+			break;
+			case "IMG":
+			case "IMAGE":
+				super.img(...fed.slice(1));
+			break;
+			default:
+				super.verboseLog(2, "Invalid Shape Input Entered");
+			break;
+		}
+		this.verboseLog(1000, shape, args);
 	}
 
 	rect(...args)
@@ -78,5 +106,16 @@ class JSMemoryCanvas extends JSCanvas
 		this.history.push(args.slice());
 		args.shift();
 		return args;
+	}
+
+	get export()
+	{
+		var exportation = "[";
+		for(let memory of this.history)
+		{
+			exportation += `\n\t[${ memory.toString().split(",").join(", ") }],`;
+		}
+		exportation += "\n]";
+		return exportation;
 	}
 }

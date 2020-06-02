@@ -19,23 +19,26 @@ class JSCanvas
 			y: -999,
 			mouseDown: false,
 			mouseClicked: false,
+			onMouseDown: e => {
+				this.verboseLog(3, "Mouse Down: ", e);
+				this.cursor.mouseDown = true;
+			},
+			onMouseMove: e => {
+				this.verboseLog(1000, "Mouse Position: ", [e.clientX, e.clientY]);
+				var canvasBound = this.canvas.getBoundingClientRect();
+				this.cursor["x"] = this.cursor.scale * (e.clientX - canvasBound.left);
+				this.cursor["y"] = this.cursor.scale * (e.clientY - canvasBound.top);
+			},
+			onMouseClick: e => {
+				this.verboseLog(3, "Mouse Up: ", e);
+				this.cursor.mouseClicked = true;
+				this.cursor.mouseDown = false;
+			},
 			relativeDrawing: []
 		};
-		this.canvas.addEventListener("mousemove", e => {
-			this.verboseLog(1000, "Mouse Position: ", [e.clientX, e.clientY]);
-			var canvasBound = this.canvas.getBoundingClientRect();
-			this.cursor["x"] = this.cursor.scale * (e.clientX - canvasBound.left);
-			this.cursor["y"] = this.cursor.scale * (e.clientY - canvasBound.top);
-		});
-		this.canvas.addEventListener("mousedown", e => {
-			this.verboseLog(3, "Mouse Down: ", e);
-			this.cursor.mouseDown = true;
-		});
-		this.canvas.addEventListener("mouseup", e => {
-			this.verboseLog(3, "Mouse Up: ", e);
-			this.cursor.mouseClicked = true;
-			this.cursor.mouseDown = false;
-		});
+		this.canvas.addEventListener("mousemove", this.cursor.onMouseMove);
+		this.canvas.addEventListener("mousedown", this.cursor.onMouseDown);
+		this.canvas.addEventListener("mouseup", this.cursor.onMouseClick);
 	}
 
 	updateResizers()
@@ -55,8 +58,8 @@ class JSCanvas
 
 	restoreDefaults()
 	{
-		this.ctx.fillColor = "#000000";
-		this.ctx.strokeStyle = "#000000";
+		this.fill = "#000000";
+		this.stroke = "#000000";
 		this.ctx.font = "10px Arial";
 		this.resolutionScale = 10;
 	}
@@ -143,14 +146,14 @@ class JSCanvas
 
 	rect(x, y, width, height, color, method)
 	{
-		this.fillColor(color);
+		this.fill = color;
 		this.ctx.fillRect(x, y, width, height);
 	}
 
 	circ(x, y, r, color)
 	{
 		this.verboseLog(1000, "Supered", x, y, r);
-		this.fillColor(color);
+		this.fill = color;
 		this.ctx.beginPath();
 		this.ctx.arc(x, y, r, 0, 2 * Math.PI);
 		this.ctx.fill();
@@ -187,53 +190,64 @@ class JSCanvas
 		this.ctx.clearRect(0, 0, this.width, this.height);
 	}
 
-	fill(color)
+	colorChange(color, defaultColor)
 	{
-		color = this.isColor(color)
-		if(!color) return;
-		this.ctx.fillStyle = color;
-		this.verboseLog(3, "Fill color set successfully", color);
-	}
-
-	stroke(color)
-	{
-		color = this.isColor(color)
-		if(!color) return;
-		this.ctx.strokeStyle = color;
-		this.verboseLog(3, "Stroke color set successfully", color);
-	}
-
-	isColor(color)
-	{
-		if(!color) return null;
+		if(!color) return defaultColor;
 		if(typeof color != "string" || !color.toUpperCase().match(/^#([0-9A-Z]{3}){1,2}$/))
 		{
 			this.verboseLog(2, "Invalid color format. Use hexidecimal.", color);
-			return null;
+			return defaultColor;
 		}
+		this.verboseLog(3, "Stroke color set successfully", color);
 		return color.toUpperCase();
 	}
 
-	get height() { return this.canvas.height; }
+	get height(){ return this.canvas.height; }
 	get width(){ return this.canvas.width; }
-	//Alias for width and height not made yet
+	get fill(){ return this.ctx.fillStyle; }
+	set fill(color){ this.ctx.fillStyle = this.colorChange(color); }
+	get stroke(){ return this.ctx.strokeStyle; }
+	set stroke(color){ this.ctx.strokeStyle = this.colorChange(color); }
 	get centerX(){ return this.width / 2; }
 	get centerY(){ return this.height / 2; }
-	get center() { return [this.width / 2, this.height / 2]; }
-	//No alias
+	get center(){ return [this.width / 2, this.height / 2]; }
 	get mouseX(){ return this.cursor["x"]; }
 	get mouseY(){ return this.cursor["y"]; }
 	get mouse(){ return this.cursor; }
+	get mouseDown(){ return this.cursor.mouseDown; }
+	set mouseDown(func)
+	{
+		if(typeof func == "function") this.cursor.onMouseDown = func;
+		else this.verboseLog(2, "MouseDown not a Function", func);
+	}
+	get mouseDown(){ return this.cursor.mouseDown; }
+	set mouseDown(func){ this.addEventListenerCursor("onMouseDown", func); }
+	get mouseClick(){ return this.cursor.mouseClicked; }
+	set mouseClick(func){ this.addEventListenerCursor("onMouseClick", func); }
+	get mouseMove(){ return this.cursor.mouseMove; }
+	set mouseMove(func){ this.addEventListenerCursor("onMouseMove", func); }
+	addEventListenerCursor(prop, func)
+	{
+		if(this.cursor[prop] && typeof this.cursor[prop] == "function" && typeof func == "function")
+		{
+			this.cursor[prop] = func;
+			this.verboseLog(3, `Successfullly reassigned cursor[${prop}] with `, func);
+			return;
+		}
+		this.verboseLog(2, `Invalid input in reassigning cursor events`, prop, func);
+	}
 
 	//Aliases
-	fillColor(...args) { this.fill(...args); }
-	strokeColor(...args) { this.stroke(...args); }
+	fillColor(color) { this.fill = color; }
+	strokeColor(color) { this.stroke = color; }
 	rectangle(...args) { this.rect(...args); }
 	circle(...args) { this.circ(...args); }
 	image(...args) { this.img(...args); }
 	ln(...args) { this.line(...args); }
 	scale(arg) { this.scalePixel(arg); }
 	s(arg) { this.scalePixel(arg); }
+	get x(){ return this.mouseX; }
+	get y(){ return this.mouseY; }
 
 	//Debug mode
 	toggleVerbose(level, toggle)
