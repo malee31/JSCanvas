@@ -7,12 +7,13 @@ class JSCanvas
 		window.addEventListener("resize", () => {
 			this.updateResizers();
 		})
+		this.makeMouse();
 		this.attachMouseHandlers();
 		this.restoreAllDefaults();
 		this.updateResizers();
 	}
 
-	attachMouseHandlers()
+	makeMouse()
 	{
 		this.cursor = {
 			x: -999,
@@ -36,6 +37,10 @@ class JSCanvas
 			},
 			relativeDrawing: []
 		};
+	}
+
+	attachMouseHandlers()
+	{
 		this.canvas.addEventListener("mousemove", this.cursor.onMouseMove);
 		this.canvas.addEventListener("mousedown", this.cursor.onMouseDown);
 		this.canvas.addEventListener("mouseup", this.cursor.onMouseClick);
@@ -119,6 +124,7 @@ class JSCanvas
 	draw(shape, ...args)
 	{
 		shape = shape.toUpperCase().trim();
+		console.log(args[args.length - 1]);
 		switch(shape)
 		{
 			case "RECT":
@@ -236,12 +242,6 @@ class JSCanvas
 	get mouseY(){ return this.cursor["y"]; }
 	get mouse(){ return this.cursor; }
 	get mouseDown(){ return this.cursor.mouseDown; }
-	set mouseDown(func)
-	{
-		if(typeof func == "function") this.cursor.onMouseDown = func;
-		else this.verboseLog(2, "MouseDown not a Function", func);
-	}
-	get mouseDown(){ return this.cursor.mouseDown; }
 	set mouseDown(func){ this.addEventListenerCursor("onMouseDown", func); }
 	get mouseClick(){ return this.cursor.mouseClicked; }
 	set mouseClick(func){ this.addEventListenerCursor("onMouseClick", func); }
@@ -253,6 +253,7 @@ class JSCanvas
 		{
 			this.cursor[prop] = func;
 			this.verboseLog(3, `Successfullly reassigned cursor[${prop}] with `, func);
+			this.attachMouseHandlers();
 			return;
 		}
 		this.verboseLog(2, `Invalid input in reassigning cursor events`, prop, func);

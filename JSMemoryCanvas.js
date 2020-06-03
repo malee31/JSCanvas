@@ -31,7 +31,7 @@ class JSMemoryCanvas extends JSCanvas
 		if(!Array.isArray(inputs[0])) inputs = [inputs];
 		for(let input of inputs)
 		{
-			if(softFeed) this.history.push(input.slice());
+			if(!softFeed) this.history.push(input.slice());
 			else this.softDraw(input.slice());
 		}
 	}
@@ -71,7 +71,7 @@ class JSMemoryCanvas extends JSCanvas
 				super.verboseLog(2, "Invalid Shape Input Entered");
 			break;
 		}
-		this.verboseLog(1000, shape, args);
+		this.verboseLog(1000, fed[0], fed.slice(1), fed[0].toUpperCase().trim());
 	}
 
 	rect(...args)

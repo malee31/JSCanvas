@@ -7,8 +7,26 @@
 		<div id="drawContainer">
 			<canvas id="canv"></canvas>
 			<div id="palette">
-				<h1>Instructions</h1>
-				<p>Do stuff</p>
+				<h1><u>Instructio</u>ns</h1>
+				<div class="inputPair">
+					<label for="color">Color</label>
+					<input name="color" value="#000000"></input>
+				</div>
+				<div class="inputPair">
+					<label for="shape">Shape</label>
+					<input name="shape" value="RECTANGLE"></input>
+				</div>
+				<div class="inputPair">
+					<label for="start">Start Position: </label>
+					<input name="start" value="Mouse Position" readonly></input>
+				</div>
+				<div class="inputPair">
+					<label for="distance">Shape Size</label>
+					<input name="distance" value="50"></input>
+				</div>
+				<div class="inputPair">
+					<input type="button" value="Clear Screen" onclick="JSCanv.forget(); JSCanv.clear()"></input>
+				</div>
 			</div>
 		</div>
 		<script src="../../JSCanvas.js"></script>
