@@ -77,25 +77,31 @@ class JSMemoryCanvas extends JSCanvas
 	rect(...args)
 	{
 		args = this.historyPusher("RECT", args);
-		super.rect(...args.slice(0, args.length - 1));
+		super.rect(...args.slice());
 	}
 
 	circ(...args)
 	{
 		args = this.historyPusher("CIRC", args);
-		super.circ(...args.slice(0, args.length - 1));
+		super.circ(...args.slice());
+	}
+
+	tri(...args)
+	{
+		args = this.historyPusher("TRI", args);
+		super.tri(...args.slice());
 	}
 
 	line(...args)
 	{
 		args = this.historyPusher("LINE", args);
-		super.line(...args.slice(0, args.length - 1));
+		super.line(...args.slice());
 	}
 
 	img(...args)
 	{
 		args = this.historyPusher("IMG", args);
-		super.img(...args.slice(0, args.length - 1));
+		super.img(...args.slice());
 	}
 
 	historyPusher(methodName, args)

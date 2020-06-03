@@ -58,8 +58,8 @@ class JSCanvas
 
 	restoreDefaults()
 	{
-		this.fill = "#000000";
-		this.stroke = "#000000";
+		this.ctx.fillStyle = "#000000";
+		this.ctx.strokeStyle = "#000000";
 		this.ctx.font = "10px Arial";
 		this.resolutionScale = 10;
 	}
@@ -129,6 +129,10 @@ class JSCanvas
 			case "CIRCLE":
 				this.circ(...args);
 			break;
+			case "TRI":
+			case "TRIANGLE":
+				this.tri(...args);
+			break;
 			case "LN":
 			case "LINE":
 				this.line(...args);
@@ -157,11 +161,25 @@ class JSCanvas
 		this.ctx.beginPath();
 		this.ctx.arc(x, y, r, 0, 2 * Math.PI);
 		this.ctx.fill();
+		//Feels like closing the path is missing
+	}
+
+	tri(x1, y1, x2, y2, x3, y3, color)
+	{
+		this.fill = color;
+		this.ctx.beginPath();
+		this.ctx.moveTo(x1, y1);
+		this.ctx.lineTo(x2, y2);
+		this.ctx.lineTo(x3, y3);
+		//this.ctx.lineTo(x1, y1);
+		this.ctx.closePath();
+		//this.ctx.stroke();
+		this.ctx.fill();
 	}
 
 	line(x1, y1, x2, y2, color)
 	{
-		this.stroke(color);
+		this.stroke = color;
 		this.ctx.beginPath();
 		this.ctx.moveTo(x1, y1);
 		this.ctx.lineTo(x2, y2);
@@ -192,6 +210,7 @@ class JSCanvas
 
 	colorChange(color, defaultColor)
 	{
+		this.verboseLog(3, "colorchange", color, defaultColor, !color);
 		if(!color) return defaultColor;
 		if(typeof color != "string" || !color.toUpperCase().match(/^#([0-9A-Z]{3}){1,2}$/))
 		{
@@ -205,9 +224,11 @@ class JSCanvas
 	get height(){ return this.canvas.height; }
 	get width(){ return this.canvas.width; }
 	get fill(){ return this.ctx.fillStyle; }
-	set fill(color){ this.ctx.fillStyle = this.colorChange(color); }
+	set fill(color){ this.ctx.fillStyle = this.colorChange(color, this.ctx.fillStyle); }
 	get stroke(){ return this.ctx.strokeStyle; }
-	set stroke(color){ this.ctx.strokeStyle = this.colorChange(color); }
+	set stroke(color){ this.ctx.strokeStyle = this.colorChange(color, this.ctx.strokeStyle); }
+	get strokeSize(){ return this.ctx.lineWidth; }
+	set strokeSize(num){ if(typeof num == "number") this.ctx.lineWidth = num; }
 	get centerX(){ return this.width / 2; }
 	get centerY(){ return this.height / 2; }
 	get center(){ return [this.width / 2, this.height / 2]; }
@@ -242,6 +263,7 @@ class JSCanvas
 	strokeColor(color) { this.stroke = color; }
 	rectangle(...args) { this.rect(...args); }
 	circle(...args) { this.circ(...args); }
+	triangle(...arg){ this.tri(...args); }
 	image(...args) { this.img(...args); }
 	ln(...args) { this.line(...args); }
 	scale(arg) { this.scalePixel(arg); }
