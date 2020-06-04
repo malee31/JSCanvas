@@ -25,7 +25,7 @@ class JSMemoryCanvas extends JSCanvas
 	{
 		if(!Array.isArray(inputs))
 		{
-			this.verboseLog(2, "Incompatible feed type");
+			this.verboseLog("error", "feed", "Incompatible feed type");
 			return;
 		}
 		if(!Array.isArray(inputs[0])) inputs = [inputs];
@@ -38,13 +38,12 @@ class JSMemoryCanvas extends JSCanvas
 
 	redraw()
 	{
-		this.verboseLog(1, "Redrawing", this.history);
+		this.verboseLog("run", "redraw", this.history);
 		for(let memory of this.history)
 		{
-			this.verboseLog(4, "Memory Redrawing: ", memory);
+			this.verboseLog("excessive", "redraw", memory);
 			super.draw(memory[0], [memory.slice(1)]);
 		}
-		this.verboseLog(3, "History contents", this.history);
 	}
 
 	softDraw(fed)
@@ -68,10 +67,10 @@ class JSMemoryCanvas extends JSCanvas
 				super.img(...fed.slice(1));
 			break;
 			default:
-				super.verboseLog(2, "Invalid Shape Input Entered");
+				super.verboseLog("noAction", "softDraw", "Invalid Shape Input Entered");
 			break;
 		}
-		this.verboseLog(1000, fed[0], fed.slice(1), fed[0].toUpperCase().trim());
+		this.verboseLog("excessive", "softDraw", fed[0], fed.slice(1), fed[0].toUpperCase().trim());
 	}
 
 	rect(...args)
@@ -107,7 +106,7 @@ class JSMemoryCanvas extends JSCanvas
 	historyPusher(methodName, args)
 	{
 		if(Array.isArray(args) && Array.isArray(args[0])) return args[0][0];
-		this.verboseLog(3, "History Pushing: ", args);
+		this.verboseLog("success", "historyPusher", "History Pushing: ", args);
 		args.unshift(methodName);
 		this.history.push(args.slice());
 		args.shift();
@@ -117,10 +116,18 @@ class JSMemoryCanvas extends JSCanvas
 	get export()
 	{
 		var exportation = "[";
-		for(let memory of this.history)
+		for(var memory = 0; memory < this.history.length; memory++)
 		{
-			exportation += `\n\t[${ memory.toString().split(",").join(", ") }],`;
+			exportation += "\n\t["
+			for(var part = 0; part < this.history[memory].length; part++)
+			{
+				if(typeof this.history[memory][part] == "number") exportation += this.history[memory][part];
+				else exportation += `"${this.history[memory][part]}"`;
+				if(part + 1 != this.history[memory].length) exportation += ", ";
+			}
+			exportation += "],";
 		}
+		if(exportation.charAt(exportation.length - 1) != "[") exportation = exportation.substring(0, exportation.length - 1);
 		exportation += "\n]";
 		return exportation;
 	}

@@ -21,17 +21,17 @@ class JSCanvas
 			mouseDown: false,
 			mouseClicked: false,
 			onMouseDown: e => {
-				this.verboseLog(3, "Mouse Down: ", e);
+				this.verboseLog("run", "makeMouse", "Mouse Down: ", e);
 				this.cursor.mouseDown = true;
 			},
 			onMouseMove: e => {
-				this.verboseLog(1000, "Mouse Position: ", [e.clientX, e.clientY]);
+				this.verboseLog("excessive", "makeMouse", "Mouse Position: ", [e.clientX, e.clientY]);
 				var canvasBound = this.canvas.getBoundingClientRect();
 				this.cursor["x"] = this.cursor.scale * (e.clientX - canvasBound.left);
 				this.cursor["y"] = this.cursor.scale * (e.clientY - canvasBound.top);
 			},
 			onMouseClick: e => {
-				this.verboseLog(3, "Mouse Up: ", e);
+				this.verboseLog("run", "makeMouse", "Mouse Up: ", e);
 				this.cursor.mouseClicked = true;
 				this.cursor.mouseDown = false;
 			},
@@ -51,7 +51,7 @@ class JSCanvas
 		//TODO: Actually cap the max size to comply with browser limitations
 		if(typeof this.defaultDimensions != "object")
 		{
-			this.verboseLog(3, "Reset Dimensions");
+			this.verboseLog("success", "updateResizers", "Reset Dimensions");
 			this.defaultDimensions = {width: this.canvas.width, height: this.canvas.height};
 		}
 		//Fixes Aspect Ratio
@@ -72,7 +72,7 @@ class JSCanvas
 	restoreAllDefaults()
 	{
 		this.restoreDefaults();
-		this.toggle = false;
+		this.initVerbose();
 		this.resetTimers();
 	}
 
@@ -110,10 +110,10 @@ class JSCanvas
 		if(typeof cb == "function")
 		{
 			this.action = cb;
-			this.verboseLog(3, "action set");
+			this.verboseLog("success", "setAction", "Action set");
 			return;
 		}
-		this.verboseLog(2, "not a function");
+		this.verboseLog("error", "setAction", "Not a function", cb);
 	}
 
 	scalePixel(val)
@@ -124,7 +124,6 @@ class JSCanvas
 	draw(shape, ...args)
 	{
 		shape = shape.toUpperCase().trim();
-		console.log(args[args.length - 1]);
 		switch(shape)
 		{
 			case "RECT":
@@ -148,10 +147,10 @@ class JSCanvas
 				this.img(...args);
 			break;
 			default:
-				this.verboseLog(2, "Invalid Shape Input Entered");
+				this.verboseLog("noAction", "draw", "Invalid Shape Input Entered");
 			break;
 		}
-		this.verboseLog(1000, shape, args);
+		this.verboseLog("excessive", "draw", shape, args);
 	}
 
 	rect(x, y, width, height, color, method)
@@ -162,7 +161,7 @@ class JSCanvas
 
 	circ(x, y, r, color)
 	{
-		this.verboseLog(1000, "Supered", x, y, r);
+		this.verboseLog("excessive", "circ", "Supered", x, y, r);
 		this.fill = color;
 		this.ctx.beginPath();
 		this.ctx.arc(x, y, r, 0, 2 * Math.PI);
@@ -216,14 +215,14 @@ class JSCanvas
 
 	colorChange(color, defaultColor)
 	{
-		this.verboseLog(3, "colorchange", color, defaultColor, !color);
+		this.verboseLog("run", "colorChange", color, defaultColor, !color);
 		if(!color) return defaultColor;
 		if(typeof color != "string" || !color.toUpperCase().match(/^#([0-9A-Z]{3}){1,2}$/))
 		{
-			this.verboseLog(2, "Invalid color format. Use hexidecimal.", color);
+			this.verboseLog("noAction", "colorChange", "Invalid color format. Use hexidecimal.", color);
 			return defaultColor;
 		}
-		this.verboseLog(3, "Stroke color set successfully", color);
+		this.verboseLog("success", "colorChange", "Stroke color set successfully", color);
 		return color.toUpperCase();
 	}
 
@@ -252,11 +251,11 @@ class JSCanvas
 		if(this.cursor[prop] && typeof this.cursor[prop] == "function" && typeof func == "function")
 		{
 			this.cursor[prop] = func;
-			this.verboseLog(3, `Successfullly reassigned cursor[${prop}] with `, func);
+			this.verboseLog("success", "addEventListenerCursor", `Successfullly reassigned cursor[${prop}] with `, func);
 			this.attachMouseHandlers();
 			return;
 		}
-		this.verboseLog(2, `Invalid input in reassigning cursor events`, prop, func);
+		this.verboseLog("error", "addEventListenerCursor", `Invalid input in reassigning cursor events`, prop, func);
 	}
 
 	//Aliases
@@ -273,28 +272,28 @@ class JSCanvas
 	get y(){ return this.mouseY; }
 
 	//Debug mode
-	toggleVerbose(level, toggle)
+	toggleVerbose(options, toggle)
 	{
-		this.logLevel = typeof level == "number" ? level : 1000;
-		if(typeof toggle == "boolean") this.toggle = toggle;
-		else this.toggle = !this.toggle;
+		if(typeof options == "string") this.verbose[options] = typeof toggle == "boolean" ? toggle : !this.verbose[options];
+		else if(typeof options == "object")
+		{
+			for(let key in options)
+			{
+				this.toggleVerbose(key, options[key]);
+			}
+		}
+		else this.verboseLog("error", "toggleVerbose", options, toggle);
 	}
 
 	/*
 	 * A function used for logging messages while debugging.
-	 * Has multiple levels for amounts of spam:
-	 * 1: Temporary Debugging
-	 * 2: Failure Logs
-	 * 3. Success Logs
-	 * 1000. Excessive logging
-	 * @param {number} logLevel Minimum level required to show
 	 * @param {string} message Message displayed by log
 	 * @param {*} additional Items to append to log
 	**/
-	verboseLog(logLevel, message, ...additional)
+	verboseLog(logType, originName, message, ...additional)
 	{
-		if(logLevel > this.logLevel) return;
-		if(this.toggle)
+		if(!this.verbose[logType]) this.verboseLog("error", "verboseLog", "Invalid logType", logType, originName, message, additional);
+		if(this.verbose[logType][originName])
 		{
 			switch(additional.length)
 			{
@@ -308,5 +307,43 @@ class JSCanvas
 					console.log(message, additional);
 			}
 		}
+	}
+
+	initVerbose()
+	{
+		if(this.verbose) return;
+		this.verbose = {
+			run: {
+				colorChange: false,
+				redraw: false,
+				makeMouse: false
+			},
+			success: {
+				addEventListenerCursor: false,
+				colorChange: false,
+				historyPusher: false,
+				updateResizers: false,
+				setAction: false
+			},
+			noAction: {
+				colorChange: false,
+				draw: false,
+				softDraw: false
+			},
+			error: {
+				addEventListenerCursor: false,
+				feed: false,
+				setAction: false,
+				toggleVerbose: true,
+				verboseLog: true
+			},
+			excessive: {
+				circ: false,
+				draw: false,
+				redraw: false,
+				softDraw: false,
+				makeMouse: false
+			}
+		};
 	}
 }
