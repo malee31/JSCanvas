@@ -1,7 +1,9 @@
 const JSCanv = new JSMemoryCanvas(document.getElementById("canv"));
 const inputs = document.querySelectorAll("input");
-JSCanv.toggleVerbose(1, true);
-
+document.getElementById("exportJSCanv").onclick = () => {
+	document.getElementById("exportJSCanv").innerHTML = JSCanv.export;
+	console.log(JSCanv.export);
+}
 
 JSCanv.mouseDown = () => {
 	JSCanv.draw(...formShape());

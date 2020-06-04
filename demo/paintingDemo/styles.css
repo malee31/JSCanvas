@@ -52,3 +52,12 @@ u {
 	padding: 5px;
 	flex-direction: column;
 }
+
+#exportJSCanv {
+	background-color: lightgrey;
+	min-height: 15px;
+	tab-size: 2;
+	overflow-y: hidden;
+	width: 100%;
+	word-wrap: break-word;
+}
