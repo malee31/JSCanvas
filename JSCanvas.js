@@ -123,34 +123,63 @@ class JSCanvas
 
 	draw(shape, ...args)
 	{
-		shape = shape.toUpperCase().trim();
-		switch(shape)
+		switch(this.shapeType(shape))
 		{
 			case "RECT":
-			case "RECTANGLE":
 				this.rect(...args);
 			break;
 			case "CIRC":
-			case "CIRCLE":
 				this.circ(...args);
 			break;
 			case "TRI":
-			case "TRIANGLE":
 				this.tri(...args);
 			break;
-			case "LN":
 			case "LINE":
 				this.line(...args);
 			break;
 			case "IMG":
-			case "IMAGE":
 				this.img(...args);
 			break;
 			default:
-				this.verboseLog("noAction", "draw", "Invalid Shape Input Entered");
+				this.verboseLog("noAction", "draw", "Invalid Shape Input Entered", this.shapeType(shape));
 			break;
 		}
-		this.verboseLog("excessive", "draw", shape, args);
+		this.verboseLog("excessive", "draw", this.shapeType(shape), args);
+	}
+
+	shapeType(shape)
+	{
+		if(typeof shape != "string")
+		{
+			this.verboseLog("error", "shapeType", "shapeType failed on typeof shape == 'string'", shape);
+			return shape;
+		}
+		switch(shape.trim().toUpperCase())
+		{
+			case "RECT":
+			case "RECTANGLE":
+				return "RECT";
+			break;
+			case "CIRC":
+			case "CIRCLE":
+				return "CIRC";
+			break;
+			case "TRI":
+			case "TRIANGLE":
+				return "TRI";
+			break;
+			case "LINE":
+			case "LN":
+				return "LINE";
+			break;
+			case "IMG":
+			case "IMAGE":
+				return "IMG";
+			break;
+			default:
+				this.verboseLog("noAction", "shapeType", "Invalid Shape Input Entered");
+				return shape;
+		}
 	}
 
 	rect(x, y, width, height, color, method)
@@ -164,7 +193,7 @@ class JSCanvas
 		this.verboseLog("excessive", "circ", "Supered", x, y, r);
 		this.fill = color;
 		this.ctx.beginPath();
-		this.ctx.arc(x, y, r, 0, 2 * Math.PI);
+		this.ctx.arc(x, y, Math.abs(r), 0, 2 * Math.PI);
 		this.ctx.fill();
 		//Feels like closing the path is missing
 	}
@@ -219,7 +248,7 @@ class JSCanvas
 		if(!color) return defaultColor;
 		if(typeof color != "string" || !color.toUpperCase().match(/^#([0-9A-Z]{3}){1,2}$/))
 		{
-			this.verboseLog("noAction", "colorChange", "Invalid color format. Use hexidecimal.", color);
+			this.verboseLog("noAction", "colorChange", "Invalid color format. Use hexidecimal.", color, `Default: ${defaultColor}`);
 			return defaultColor;
 		}
 		this.verboseLog("success", "colorChange", "Stroke color set successfully", color);
@@ -328,12 +357,14 @@ class JSCanvas
 			noAction: {
 				colorChange: false,
 				draw: false,
+				shapeType: false,
 				softDraw: false
 			},
 			error: {
 				addEventListenerCursor: false,
 				feed: false,
 				setAction: false,
+				shapeType: false,
 				toggleVerbose: true,
 				verboseLog: true
 			},

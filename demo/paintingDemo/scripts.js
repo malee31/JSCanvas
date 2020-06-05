@@ -17,11 +17,26 @@ JSCanv.mouseMove = () => {
 
 function formShape()
 {
-	var x = JSCanv.mouseX;
-	var y = JSCanv.mouseY;
 	var size = Number(inputs[3].value) != NaN ? Number(inputs[3].value) : 0;
-	var shape = inputs[1].value.toUpperCase().trim();
+	var shape = JSCanv.shapeType(inputs[1].value.toUpperCase().trim());
+	var output = [shape, JSCanv.mouseX, JSCanv.mouseY, size, size];
 	var color = inputs[0].value.trim();
-	if(shape == "CIRC" || shape == "CIRCLE") return [shape, x, y, size, color];
-	return [shape, x, y, size, size, color];
+	if(shape == "CIRC")
+	{
+		output.pop();
+		color = JSCanv.colorChange(color, JSCanv.stroke);
+	}
+	else if(shape == "TRI")
+	{
+		output.pop();
+		output.pop();
+		output.push(JSCanv.mouseX, JSCanv.mouseY + size, JSCanv.mouseX + size, JSCanv.mouseY);
+		color = JSCanv.colorChange(color, JSCanv.stroke);
+	}
+	else
+	{
+		color = JSCanv.colorChange(color, JSCanv.fill);
+	}
+	output.push(color);
+	return output;
 }
