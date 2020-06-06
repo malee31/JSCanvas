@@ -13,12 +13,14 @@ class JSMemoryCanvas extends JSCanvas
 	restoreAllDefaults()
 	{
 		this.history = [];
+		this.drawGroups = [];
 		super.restoreAllDefaults();
 	}
 
-	forget()
+	forget(includeDrawGroups)
 	{
 		this.history = [];
+		if(includeDrawGroups) this.drawGroups = [];
 	}
 
 	feed(inputs, softFeed)
@@ -103,11 +105,13 @@ class JSMemoryCanvas extends JSCanvas
 		super.img(...args.slice());
 	}
 
+	addGroup(group) {this.drawGroups.push(group);}
+
 	historyPusher(methodName, args)
 	{
 		if(Array.isArray(args) && Array.isArray(args[0])) return args[0][0];
 		this.verboseLog("success", "historyPusher", "History Pushing: ", args);
-		args.unshift(methodName);
+		args.unshift(this.shapeType(methodName));
 		this.history.push(args.slice());
 		args.shift();
 		return args;

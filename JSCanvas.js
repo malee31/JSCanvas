@@ -1,5 +1,10 @@
+/** Class containing functions for canvas drawing or animations*/
 class JSCanvas
 {
+	/**
+	 * Initializes the JSCanvas object
+	 * @param {HTMLCanvasElement} canv Canvas for this specific instance of JSCanvas
+	 */
 	constructor(canv)
 	{
 		this.canvas = canv;
@@ -13,6 +18,9 @@ class JSCanvas
 		this.updateResizers();
 	}
 
+	/**
+	 * Creates or resets this.cursor and the mouse event listener actions
+	 */
 	makeMouse()
 	{
 		this.cursor = {
@@ -34,11 +42,13 @@ class JSCanvas
 				this.verboseLog("run", "makeMouse", "Mouse Up: ", e);
 				this.cursor.mouseClicked = true;
 				this.cursor.mouseDown = false;
-			},
-			relativeDrawing: []
+			}
 		};
 	}
 
+	/**
+	 * Attaches event listeners for the mouse using the functions in this.cursor
+	 */
 	attachMouseHandlers()
 	{
 		this.canvas.addEventListener("mousemove", this.cursor.onMouseMove);
@@ -46,6 +56,9 @@ class JSCanvas
 		this.canvas.addEventListener("mouseup", this.cursor.onMouseClick);
 	}
 
+	/**
+	 * Resizes canvas and sets scale factor for cursor
+	 */
 	updateResizers()
 	{
 		//TODO: Actually cap the max size to comply with browser limitations
@@ -61,6 +74,9 @@ class JSCanvas
 		this.cursor.scale = this.width / this.canvas.clientWidth;
 	}
 
+	/**
+	 * Restores defaults for the canvas drawing styles
+	 */
 	restoreDefaults()
 	{
 		this.ctx.fillStyle = "#000000";
@@ -69,6 +85,9 @@ class JSCanvas
 		this.resolutionScale = 10;
 	}
 
+	/**
+	 * Restores all defaults and resets JSCanvas back to near initial state
+	 */
 	restoreAllDefaults()
 	{
 		this.restoreDefaults();
@@ -76,6 +95,9 @@ class JSCanvas
 		this.resetTimers();
 	}
 
+	/**
+	 * Resets the timer back to original state
+	 */
 	resetTimers()
 	{
 		this.counter = 0;
@@ -86,6 +108,10 @@ class JSCanvas
 		this.timer = setInterval(this.tick.bind(this), 500);
 	}
 
+	/**
+	 * Runs repeatedly as many times as possible using requestAnimationFrame
+	 * Also handles calling the this.action function
+	 */
 	sanityCheck()
 	{
 		if(typeof this.action == "function") this.action();
@@ -100,11 +126,17 @@ class JSCanvas
 		}
 	}
 
+	/**
+	 * Increments timer and loops once it reaches the set limit
+	 */
 	tick()
 	{
 		this.counter = (this.counter + 1) % this.timerLoop;
 	}
 
+	/**
+	 * Sets the action the canvas repeatedly does each time it reruns.
+	 */
 	setAction(cb)
 	{
 		if(typeof cb == "function")
@@ -116,11 +148,18 @@ class JSCanvas
 		this.verboseLog("error", "setAction", "Not a function", cb);
 	}
 
-	scalePixel(val)
+	/*scalePixel(val)
 	{
 		return val * this.resolutionScale;
-	}
+	}*/
 
+
+	/**
+	 * General function for drawing shapes onto the canvas
+	 * Reroutes arguments into their respective functions
+	 * @param {string} shape The shape to draw. Must be one of the valid cases for any action to be taken
+	 * @param {...*} args Arguments to pass into the draw function for the shape
+	 */
 	draw(shape, ...args)
 	{
 		switch(this.shapeType(shape))
@@ -147,6 +186,11 @@ class JSCanvas
 		this.verboseLog("excessive", "draw", this.shapeType(shape), args);
 	}
 
+	/**
+	 * Fixes the string that represents the shape type for the draw function into their canon values
+	 * @param {string} shape The shape to be processed by trimming and capitalizing before switching
+	 * @returns {string|*} returns the fixed string or the input if the input was invalid and unable to be fixed.
+	 */
 	shapeType(shape)
 	{
 		if(typeof shape != "string")
@@ -182,12 +226,28 @@ class JSCanvas
 		}
 	}
 
+	/**
+	 * Draws a rectangle given x, y, width, method, and the color (optional).
+	 * @param {number} x The X position for the top left corner of the rectangle
+	 * @param {number} y The Y position for the top left corner of the rectangle
+	 * @param {number} width The width of the rectangle
+	 * @param {number} height The height of the rectange
+	 * @param {string} [color] The hexidecimal value to color the rectangle. See this.fill (setter) for specifics. Defaults to last used color or #000000
+	 * @param {string} [method] Alters how the rectangle is formed (i.e. (x, y) refers to center. See function description for more details)
+	 */
 	rect(x, y, width, height, color, method)
 	{
 		this.fill = color;
 		this.ctx.fillRect(x, y, width, height);
 	}
 
+	/**
+	 * Draws a circle given x, y, radius, and the color (optional).
+	 * @param {number} x The X position for the center of the circle
+	 * @param {number} y The Y position for the center of the circle
+	 * @param {number} r The radius of the circl
+	 * @param {string} [color] The hexidecimal value to color the circle. See this.fill (setter) for specifics. Defaults to last used color or #000000
+	 */
 	circ(x, y, r, color)
 	{
 		this.verboseLog("excessive", "circ", "Supered", x, y, r);
@@ -198,19 +258,30 @@ class JSCanvas
 		//Feels like closing the path is missing
 	}
 
-	tri(x1, y1, x2, y2, x3, y3, color)
+	/**
+	 * Draws a triangle given arrays with the x and y and the color (optional).
+	 * @param {number[]} xPositions Array of X positions for the triangle
+	 * @param {number[]} yPosition Array of Y positions for the triangle
+	 * @param {string} [color] The hexidecimal value to color the circle. See this.fill (setter) for specifics. Defaults to last used color or #000000
+	 */
+	tri(xPositions, yPosition, color)
 	{
 		this.fill = color;
 		this.ctx.beginPath();
-		this.ctx.moveTo(x1, y1);
-		this.ctx.lineTo(x2, y2);
-		this.ctx.lineTo(x3, y3);
-		//this.ctx.lineTo(x1, y1);
+		this.ctx.moveTo(xPositions[0], yPosition[0]);
+		this.ctx.lineTo(xPositions[1], yPosition[1]);
+		this.ctx.lineTo(xPositions[2], yPosition[2]);
 		this.ctx.closePath();
 		//this.ctx.stroke();
 		this.ctx.fill();
 	}
 
+	/**
+	 * Draws a line given arrays with the x and y and the color (optional).
+	 * @param {number[]} xPositions Array of X positions for the triangle
+	 * @param {number[]} yPosition Array of Y positions for the triangle
+	 * @param {string} [color] The hexidecimal value to color the circle. See this.fill (setter) for specifics. Defaults to last used color or #000000
+	 */
 	line(x1, y1, x2, y2, color)
 	{
 		this.stroke = color;
@@ -220,6 +291,12 @@ class JSCanvas
 		this.ctx.stroke();
 	}
 
+
+	/**
+	 * Draws an image given a valid image object and positioning values
+	 * @param [object|string] image Valid Image object according to JavaScript Canvas documentation (may vary between browsers) or url/path of image file
+	 * @param [...number] positioning The positioning details according to JavaScript documentation on the canvas drawImage method.
+	 */
 	img(image, ...positioning)
 	{
 		if(typeof image == "string")
@@ -237,11 +314,20 @@ class JSCanvas
 		}
 	}
 
+	/**
+	 * Clears canvas
+	 */
 	clear()
 	{
 		this.ctx.clearRect(0, 0, this.width, this.height);
 	}
 
+	/**
+	 * Checks if a hex color code is valid and applies small fixes to color formatting. Returns a default if input is invalid.
+	 * @param {string} color Color code to be processed and checked
+	 * @param {string} defaultColor Color to return if unable to use color input
+	 * @returns {string} Formatted hexidecimal color or default color.
+	 */
 	colorChange(color, defaultColor)
 	{
 		this.verboseLog("run", "colorChange", color, defaultColor, !color);
@@ -253,6 +339,19 @@ class JSCanvas
 		}
 		this.verboseLog("success", "colorChange", "Stroke color set successfully", color);
 		return color.toUpperCase();
+	}
+
+	/**
+	 * Uses colorChange with proper default values based on the canvas' current state depending on shape type
+	 * @param {string} shape Shape to find default color for.
+	 * @param {string} color Color code to be processed and checked
+	 * @returns {string} Formatted hexidecimal color or default color.
+	 */
+	colorFix(shape, color)
+	{
+		shape = shapeType(shape);
+		if(shape == "LINE" || shape == "CIRC") return this.colorChange(color, this.ctx.strokeStyle);
+		else return this.colorChange(color, this.ctx.fillStyle);
 	}
 
 	get height(){ return this.canvas.height; }
@@ -295,8 +394,8 @@ class JSCanvas
 	triangle(...arg){ this.tri(...args); }
 	image(...args) { this.img(...args); }
 	ln(...args) { this.line(...args); }
-	scale(arg) { this.scalePixel(arg); }
-	s(arg) { this.scalePixel(arg); }
+	//scale(arg) { this.scalePixel(arg); }
+	//s(arg) { this.scalePixel(arg); }
 	get x(){ return this.mouseX; }
 	get y(){ return this.mouseY; }
 
@@ -314,11 +413,14 @@ class JSCanvas
 		else this.verboseLog("error", "toggleVerbose", options, toggle);
 	}
 
-	/*
-	 * A function used for logging messages while debugging.
-	 * @param {string} message Message displayed by log
+	/**
+	 * A function used for logging messages while debugging
+	 * Most options are off by default but can be enabled through this.verbose[logType][originName] = true
+	 * @param {string} logType Type of log this is for (error, success, noAction, run, or excessive)
+	 * @param {string} originName Name of function or place where this log was called from
+	 * @param {string|*} message Message displayed by log or an item to log
 	 * @param {*} additional Items to append to log
-	**/
+	 */
 	verboseLog(logType, originName, message, ...additional)
 	{
 		if(!this.verbose[logType]) this.verboseLog("error", "verboseLog", "Invalid logType", logType, originName, message, additional);
@@ -338,6 +440,9 @@ class JSCanvas
 		}
 	}
 
+	/**
+	 * Initializes this.verbose with nearly all options set to false by default
+	 */
 	initVerbose()
 	{
 		if(this.verbose) return;
