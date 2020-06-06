@@ -1,4 +1,4 @@
-/** Class containing functions for canvas drawing or animations*/
+/** Class containing functions for canvas drawing or animations */
 class JSCanvas
 {
 	/**
@@ -261,16 +261,16 @@ class JSCanvas
 	/**
 	 * Draws a triangle given arrays with the x and y and the color (optional).
 	 * @param {number[]} xPositions Array of X positions for the triangle
-	 * @param {number[]} yPosition Array of Y positions for the triangle
+	 * @param {number[]} yPositions Array of Y positions for the triangle
 	 * @param {string} [color] The hexidecimal value to color the circle. See this.fill (setter) for specifics. Defaults to last used color or #000000
 	 */
-	tri(xPositions, yPosition, color)
+	tri(xPositions, yPositions, color)
 	{
 		this.fill = color;
 		this.ctx.beginPath();
-		this.ctx.moveTo(xPositions[0], yPosition[0]);
-		this.ctx.lineTo(xPositions[1], yPosition[1]);
-		this.ctx.lineTo(xPositions[2], yPosition[2]);
+		this.ctx.moveTo(xPositions[0], yPositions[0]);
+		this.ctx.lineTo(xPositions[1], yPositions[1]);
+		this.ctx.lineTo(xPositions[2], yPositions[2]);
 		this.ctx.closePath();
 		//this.ctx.stroke();
 		this.ctx.fill();
@@ -282,15 +282,47 @@ class JSCanvas
 	 * @param {number[]} yPosition Array of Y positions for the triangle
 	 * @param {string} [color] The hexidecimal value to color the circle. See this.fill (setter) for specifics. Defaults to last used color or #000000
 	 */
-	line(x1, y1, x2, y2, color)
+	line(xPositions, yPositions, color)
 	{
+		if(xPositions.length < 2 || yPositions.length < 2)
+		{
+			this.verboseLog("error", "line", "Not enough points to form a line", xPositions, yPositions, color);
+			return;
+		}
 		this.stroke = color;
 		this.ctx.beginPath();
-		this.ctx.moveTo(x1, y1);
-		this.ctx.lineTo(x2, y2);
+		this.ctx.moveTo(xPositions[0], yPositions[0]);
+		for(var pos = 1; pos < Math.min(xPositions.length, yPositions.length); pos++)
+		{
+			this.ctx.lineTo(xPositions[pos], yPositions[pos]);
+		}
 		this.ctx.stroke();
 	}
 
+	/**
+	 * Draws and Fills a polygon (Not recommended nor supported for hitbox collision detections)
+	 * Closing the shape with coordinates is optional and will be done automatically if the coordinates aren't supplied.
+	 * @param {number[]} xPositions Array of X positions for the triangle
+	 * @param {number[]} yPosition Array of Y positions for the triangle
+	 * @param {string} [color] The hexidecimal value to color the circle. See this.fill (setter) for specifics. Defaults to last used color or #000000
+	 */
+	poly(xPositions, yPositions, color)
+	{
+		if(xPositions.length < 3 || yPositions.length < 3)
+		{
+			this.verboseLog("error", "poly", "Not enough points to form a polygon", xPositions, yPositions, color);
+			return;
+		}
+		this.stroke = color;
+		this.ctx.beginPath();
+		this.ctx.moveTo(xPositions[0], yPositions[0]);
+		for(var pos = 1; pos < Math.min(xPositions.length, yPositions.length); pos++)
+		{
+			this.ctx.lineTo(xPositions[pos], yPositions[pos]);
+		}
+		this.ctx.closePath();
+		this.ctx.fill();
+	}
 
 	/**
 	 * Draws an image given a valid image object and positioning values
@@ -470,6 +502,7 @@ class JSCanvas
 				feed: false,
 				setAction: false,
 				shapeType: false,
+				line: false,
 				toggleVerbose: true,
 				verboseLog: true
 			},

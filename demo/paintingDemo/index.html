@@ -9,20 +9,28 @@
 			<div id="palette">
 				<h1><u>Instructio</u>ns</h1>
 				<div class="inputPair">
-					<label for="color">Color</label>
-					<input name="color" value="#000000"></input>
-				</div>
-				<div class="inputPair">
 					<label for="shape">Shape</label>
 					<input name="shape" value="RECTANGLE"></input>
+				</div>
+				<div class="inputPair">
+					<label for="color">Color</label>
+					<input name="color" value="#000000"></input>
 				</div>
 				<div class="inputPair">
 					<label for="start">Start Position: </label>
 					<input name="start" value="Mouse Position" readonly></input>
 				</div>
 				<div class="inputPair">
-					<label for="distance">Shape Size</label>
-					<input name="distance" value="50"></input>
+					<label for="xCoords">Additional X Coordinates</label>
+					<input name="xCoords" value=""></input>
+				</div>
+				<div class="inputPair">
+					<label for="yCoords">Additional Y Coordinates</label>
+					<input name="yCoords" value=""></input>
+				</div>
+				<div class="inputPair">
+					<label for="size">Shape Size</label>
+					<input name="size" value="50"></input>
 				</div>
 				<div class="inputPair">
 					<input type="button" value="Clear Screen" onclick="JSCanv.forget(); JSCanv.clear()"></input>

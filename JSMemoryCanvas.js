@@ -1,3 +1,4 @@
+/** An extension to the JSCanvas class that includes being able to redraw past shapes and draw temporary shapes before erasing them */
 class JSMemoryCanvas extends JSCanvas
 {
 	constructor(canv)
@@ -97,6 +98,12 @@ class JSMemoryCanvas extends JSCanvas
 	{
 		args = this.historyPusher("LINE", args);
 		super.line(...args.slice());
+	}
+
+	poly(...args)
+	{
+		args = this.historyPusher("POLY", args);
+		super.poly(...args.slice());
 	}
 
 	img(...args)
