@@ -499,7 +499,8 @@ class JSCanvas
 				colorChange: false,
 				draw: false,
 				shapeType: false,
-				softDraw: false
+				softDraw: false,
+				historyPusher: false
 			},
 			error: {
 				addEventListenerCursor: false,

@@ -28,14 +28,14 @@ class JSMemoryCanvas extends JSCanvas
 	{
 		if(!Array.isArray(inputs))
 		{
-			this.verboseLog("error", "feed", "Incompatible feed type");
+			this.verboseLog("error", "feed", "Incompatible feed type", inputs);
 			return;
 		}
 		if(!Array.isArray(inputs[0])) inputs = [inputs];
 		for(let input of inputs)
 		{
-			if(!softFeed) this.history.push(input.slice());
-			else this.softDraw(input.slice());
+			if(!softFeed) this.history.push(this.inputArrayCopy(input.slice()));
+			else this.softDraw(this.inputArrayCopy(input));
 		}
 	}
 
@@ -45,7 +45,7 @@ class JSMemoryCanvas extends JSCanvas
 		for(let memory of this.history)
 		{
 			this.verboseLog("excessive", "redraw", memory);
-			super.draw(memory[0], [memory.slice(1)]);
+			super.draw(memory[0], memory.slice(1));
 		}
 	}
 
@@ -116,30 +116,43 @@ class JSMemoryCanvas extends JSCanvas
 
 	historyPusher(methodName, args)
 	{
-		if(Array.isArray(args) && Array.isArray(args[0])) return args[0][0];
-		this.verboseLog("success", "historyPusher", "History Pushing: ", args);
-		args.unshift(this.shapeType(methodName));
-		this.history.push(args.slice());
-		args.shift();
+		if(Array.isArray(args) && args.length == 1)
+		{
+			this.verboseLog("noAction", "historyPusher", "Repeat draw, no push: ", methodName, args);
+			return args[0];
+		}
+		var copied = this.inputArrayCopy(args, [methodName]);
+		this.verboseLog("success", "historyPusher", "History Pushing: ", args, "Rebuild: ", copied);
+		this.history.push(copied);
 		return args;
+	}
+
+	inputArrayCopy(arr, base)
+	{
+		var rebuild = Array.isArray(base) ? base : [];
+		for(let item of arr)
+		{
+			if(Array.isArray(item)) rebuild.push(item.slice());
+			else rebuild.push(item);
+		}
+		return rebuild;
 	}
 
 	get export()
 	{
-		var exportation = "[";
-		for(var memory = 0; memory < this.history.length; memory++)
+		var exportation = JSON.stringify(this.history);
+		exportation = `[\n\t${exportation.slice(1, exportation.length - 1)}\n]`;
+		var deficit = 0;
+		for(var charIndex = 3; charIndex < exportation.length - 2; charIndex++)
 		{
-			exportation += "\n\t["
-			for(var part = 0; part < this.history[memory].length; part++)
+			if(exportation.charAt(charIndex) == "[") deficit++;
+			if(exportation.charAt(charIndex) == "]") deficit--;
+			if(deficit == 0)
 			{
-				if(typeof this.history[memory][part] == "number") exportation += this.history[memory][part];
-				else exportation += `"${this.history[memory][part]}"`;
-				if(part + 1 != this.history[memory].length) exportation += ", ";
+				exportation = `${exportation.slice(0, charIndex + 1)},\n\t${exportation.slice(charIndex + 2, exportation.length)}`; 
+				charIndex += 3;
 			}
-			exportation += "],";
 		}
-		if(exportation.charAt(exportation.length - 1) != "[") exportation = exportation.substring(0, exportation.length - 1);
-		exportation += "\n]";
-		return exportation;
+		return exportation.slice(0, exportation.length - 4) + "\n]";
 	}
 }
