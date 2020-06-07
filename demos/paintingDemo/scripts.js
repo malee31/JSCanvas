@@ -20,31 +20,31 @@ JSCanv.mouseDown = () => {
 JSCanv.mouseMove = () => {
 	JSCanv.clear();
 	JSCanv.redraw();
-	JSCanv.softDraw(formShape());
+	JSCanv.softDraw(...formShape());
 };
 
 function formShape()
 {
-	var size = Number(inputs["size"].value) != NaN ? Number(inputs["size"].value) : 0;
-	var shape = JSCanv.shapeType(inputs["shape"].value.toUpperCase().trim());
-	var output = [shape, JSCanv.mouseX, JSCanv.mouseY, size, size];
+	var shape = [JSCanv.shapeType(inputs["shape"].value.toUpperCase().trim())];
+	var xPositions = [JSCanv.mouseX].concat(arrayifyFloat(inputs["x"].value));
+	var yPositions = [JSCanv.mouseY].concat(arrayifyFloat(inputs["y"].value));
+	var sizes = arrayifyFloat(inputs["size"].value);
 	var color = inputs["color"].value.trim();
 	if(shape == "CIRC")
 	{
-		output.pop();
 		color = JSCanv.colorChange(color, JSCanv.stroke);
 	}
 	else if(shape == "TRI")
 	{
-		output.pop();
-		output.pop();
-		output.push(JSCanv.mouseX, JSCanv.mouseY + size, JSCanv.mouseX + size, JSCanv.mouseY);
+		sizes = [];
 		color = JSCanv.colorChange(color, JSCanv.stroke);
 	}
 	else
 	{
 		color = JSCanv.colorChange(color, JSCanv.fill);
 	}
-	output.push(color);
-	return output;
+	shape.push(xPositions, yPositions, sizes, color);
+	return shape;
 }
+
+function arrayifyFloat(str) { return str.replace(" ", "").split(",").filter(inputt => Number.parseFloat(inputt)).map(inputt => Number.parseFloat(inputt)); }

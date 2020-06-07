@@ -8,7 +8,7 @@ body {
 	margin: 0;
 	vertical-align: baseline;
 	font-family: Helvetica, Arial;
-	background-color: lightgrey;
+	background-color: #402A05;
 	background-image: url("./backgroundImage.png");
 	background-size: cover;
 }
@@ -27,7 +27,7 @@ body {
 }
 
 h1 {
-	margin-bottom: 5px;
+	margin: 5px 10px;
 }
 
 a {

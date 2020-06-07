@@ -158,7 +158,7 @@ class JSCanvas
 	 * General function for drawing shapes onto the canvas
 	 * Reroutes arguments into their respective functions
 	 * @param {string} shape The shape to draw. Must be one of the valid cases for any action to be taken
-	 * @param {...*} args Arguments to pass into the draw function for the shape
+	 * @param {...*} args Arguments to pass into the draw function for the shape. Generally [xPositions, yPositions, [sizing], [additionalOptions], color]
 	 */
 	draw(shape, ...args)
 	{
@@ -228,28 +228,32 @@ class JSCanvas
 
 	/**
 	 * Draws a rectangle given x, y, width, method, and the color (optional).
-	 * @param {number} x The X position for the top left corner of the rectangle
-	 * @param {number} y The Y position for the top left corner of the rectangle
-	 * @param {number} width The width of the rectangle
-	 * @param {number} height The height of the rectange
+	 * @param {number|number[]} x The X position for the top left corner of the rectangle. First value used in arrays
+	 * @param {number|number[]} y The Y position for the top left corner of the rectangle. First value used in arrays
+	 * @param {number[]} size The dimensions of the rectangle in [width, height] format. Extra inputs ignored
 	 * @param {string} [color] The hexidecimal value to color the rectangle. See this.fill (setter) for specifics. Defaults to last used color or #000000
 	 * @param {string} [method] Alters how the rectangle is formed (i.e. (x, y) refers to center. See function description for more details)
 	 */
-	rect(x, y, width, height, color, method)
+	rect(x, y, size, color, method)
 	{
+		if(Array.isArray(x)) x = x[0];
+		if(Array.isArray(y)) y = y[0];
 		this.fill = color;
-		this.ctx.fillRect(x, y, width, height);
+		this.ctx.fillRect(x, y, size[0], size[1]);
 	}
 
 	/**
 	 * Draws a circle given x, y, radius, and the color (optional).
-	 * @param {number} x The X position for the center of the circle
-	 * @param {number} y The Y position for the center of the circle
-	 * @param {number} r The radius of the circl
+	 * @param {number|number[]} x The X position for the center of the circle. First value used in arrays
+	 * @param {number|number[]} y The Y position for the center of the circle. First value used in arrays
+	 * @param {number|number[]} r The radius of the circle. First value used in arrays.
 	 * @param {string} [color] The hexidecimal value to color the circle. See this.fill (setter) for specifics. Defaults to last used color or #000000
 	 */
 	circ(x, y, r, color)
 	{
+		if(Array.isArray(x)) x = x[0];
+		if(Array.isArray(y)) y = y[0];
+		if(Array.isArray(r)) r = r[0];
 		this.verboseLog("excessive", "circ", "Supered", x, y, r);
 		this.fill = color;
 		this.ctx.beginPath();

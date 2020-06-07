@@ -49,31 +49,31 @@ class JSMemoryCanvas extends JSCanvas
 		}
 	}
 
-	softDraw(fed)
+	softDraw(shape, ...fed)
 	{
-		switch(fed[0].toUpperCase().trim())
+		switch(shape.trim().toUpperCase())
 		{
 			case "RECT":
 			case "RECTANGLE":
-				super.rect(...fed.slice(1));
+				super.rect(...fed);
 			break;
 			case "CIRC":
 			case "CIRCLE":
-				super.circ(...fed.slice(1));
+				super.circ(...fed);
 			break;
 			case "LN":
 			case "LINE":
-				super.line(...fed.slice(1));
+				super.line(...fed);
 			break;
 			case "IMG":
 			case "IMAGE":
-				super.img(...fed.slice(1));
+				super.img(...fed);
 			break;
 			default:
 				super.verboseLog("noAction", "softDraw", "Invalid Shape Input Entered");
 			break;
 		}
-		this.verboseLog("excessive", "softDraw", fed[0], fed.slice(1), fed[0].toUpperCase().trim());
+		this.verboseLog("excessive", "softDraw", shape, fed, shape.toUpperCase().trim());
 	}
 
 	rect(...args)
