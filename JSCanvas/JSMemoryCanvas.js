@@ -51,23 +51,23 @@ class JSMemoryCanvas extends JSCanvas
 
 	softDraw(shape, ...fed)
 	{
-		switch(shape.trim().toUpperCase())
+		shape = this.shapeType(shape);
+		switch(shape)
 		{
 			case "RECT":
-			case "RECTANGLE":
 				super.rect(...fed);
 			break;
 			case "CIRC":
-			case "CIRCLE":
 				super.circ(...fed);
 			break;
-			case "LN":
 			case "LINE":
 				super.line(...fed);
 			break;
 			case "IMG":
-			case "IMAGE":
 				super.img(...fed);
+			break;
+			case "POLY":
+				super.poly(...fed);
 			break;
 			default:
 				super.verboseLog("noAction", "softDraw", "Invalid Shape Input Entered");

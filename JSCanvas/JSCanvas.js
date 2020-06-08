@@ -179,6 +179,9 @@ class JSCanvas
 			case "IMG":
 				this.img(...args);
 			break;
+			case "POLY":
+				this.poly(...args);
+			break;
 			default:
 				this.verboseLog("noAction", "draw", "Invalid Shape Input Entered", this.shapeType(shape));
 			break;
@@ -219,6 +222,10 @@ class JSCanvas
 			case "IMG":
 			case "IMAGE":
 				return "IMG";
+			break;
+			case "POLY":
+			case "POLYGON":
+				return "POLY";
 			break;
 			default:
 				this.verboseLog("noAction", "shapeType", "Invalid Shape Input Entered");

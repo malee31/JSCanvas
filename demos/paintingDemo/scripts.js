@@ -28,13 +28,21 @@ function formShape()
 	var shape = [JSCanv.shapeType(inputs["shape"].value.toUpperCase().trim())];
 	var xPositions = [JSCanv.mouseX].concat(arrayifyFloat(inputs["x"].value));
 	var yPositions = [JSCanv.mouseY].concat(arrayifyFloat(inputs["y"].value));
+	for(var xPos = 1; xPos < xPositions.length; xPos++)
+	{
+		xPositions[xPos] += xPositions[0];
+	}
+	for(var yPos = 1; yPos < yPositions.length; yPos++)
+	{
+		yPositions[yPos] += yPositions[0];
+	}
 	var sizes = arrayifyFloat(inputs["size"].value);
 	var color = inputs["color"].value.trim();
-	if(shape == "CIRC")
+	if(shape[0] == "CIRC")
 	{
 		color = JSCanv.colorChange(color, JSCanv.stroke);
 	}
-	else if(shape == "TRI")
+	else if(shape[0] == "TRI" || shape[0] == "LINE" || shape[0] == "POLY")
 	{
 		sizes = [];
 		color = JSCanv.colorChange(color, JSCanv.stroke);
@@ -47,4 +55,4 @@ function formShape()
 	return shape;
 }
 
-function arrayifyFloat(str) { return str.replace(" ", "").split(",").filter(inputt => Number.parseFloat(inputt)).map(inputt => Number.parseFloat(inputt)); }
+function arrayifyFloat(str) { return str.replace(" ", "").split(",").filter(inputt => !Number.isNaN(Number.parseFloat(inputt))).map(inputt => Number.parseFloat(inputt)); }
