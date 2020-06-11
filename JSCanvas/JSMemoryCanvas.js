@@ -61,7 +61,7 @@ class JSMemoryCanvas extends JSCanvas
 		for(let memory of this.history)
 		{
 			this.verboseLog("excessive", "redraw", memory);
-			super.draw(memory[0], memory.slice(1));
+			this.softDraw(memory[0], ...memory.slice(1));
 		}
 	}
 
@@ -104,8 +104,8 @@ class JSMemoryCanvas extends JSCanvas
 	 */
 	rect(...args)
 	{
-		args = this.historyPusher("RECT", args);
 		super.rect(...args.slice());
+		this.historyPusher("RECT", args);
 	}
 
 	/**
@@ -115,8 +115,8 @@ class JSMemoryCanvas extends JSCanvas
 	 */
 	circ(...args)
 	{
-		args = this.historyPusher("CIRC", args);
 		super.circ(...args.slice());
+		this.historyPusher("CIRC", args);
 	}
 
 	/**
@@ -126,8 +126,8 @@ class JSMemoryCanvas extends JSCanvas
 	 */
 	tri(...args)
 	{
-		args = this.historyPusher("TRI", args);
 		super.tri(...args.slice());
+		this.historyPusher("TRI", args);
 	}
 
 	/**
@@ -137,8 +137,8 @@ class JSMemoryCanvas extends JSCanvas
 	 */
 	line(...args)
 	{
-		args = this.historyPusher("LINE", args);
 		super.line(...args.slice());
+		this.historyPusher("LINE", args);
 	}
 
 	/**
@@ -148,8 +148,8 @@ class JSMemoryCanvas extends JSCanvas
 	 */
 	poly(...args)
 	{
-		args = this.historyPusher("POLY", args);
 		super.poly(...args.slice());
+		this.historyPusher("POLY", args);
 	}
 
 	/**
@@ -159,8 +159,8 @@ class JSMemoryCanvas extends JSCanvas
 	 */
 	img(...args)
 	{
-		args = this.historyPusher("IMG", args);
 		super.img(...args.slice());
+		this.historyPusher("IMG", args);
 	}
 
 	/**
@@ -189,6 +189,8 @@ class JSMemoryCanvas extends JSCanvas
 
 	/**
 	 * Makes a shallow copy of an array with a depth of two
+	 * @param {Array.*} arr Array to be copied
+	 * @param {Array.*} [base] Array to push a copy of arr into
 	 */
 	inputArrayCopy(arr, base)
 	{

@@ -13,6 +13,7 @@ class JSCanvas
 			this.updateResizers();
 		})
 		this.makeMouse();
+		this.makeModes();
 		this.attachMouseHandlers();
 		this.restoreAllDefaults();
 		this.updateResizers();
@@ -43,6 +44,17 @@ class JSCanvas
 				this.cursor.mouseClicked = true;
 				this.cursor.mouseDown = false;
 			}
+		};
+	}
+
+	/**
+	 * Makes the object containing the alternative drawing methods to use
+	 */
+	makeModes()
+	{
+		this.drawModes = {
+			rect: "normal",
+			text: "normal"
 		};
 	}
 
