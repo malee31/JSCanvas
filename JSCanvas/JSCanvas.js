@@ -73,7 +73,6 @@ class JSCanvas
 	 */
 	updateResizers()
 	{
-		//TODO: Actually cap the max size to comply with browser limitations
 		if(typeof this.defaultDimensions != "object")
 		{
 			this.verboseLog("success", "updateResizers", "Reset Dimensions");
@@ -81,6 +80,7 @@ class JSCanvas
 		}
 		//Fixes Aspect Ratio
 		this.canvas.width = this.defaultDimensions["height"] * (this.canvas.clientWidth / this.canvas.clientHeight);
+		this.resolutionScale = Math.floor(this.maxWidth / Math.max(this.defaultDimensions["height"], this.canvas.width));
 		this.canvas.width *= this.resolutionScale;
 		this.canvas.height = this.defaultDimensions["height"] * this.resolutionScale;
 		this.cursor.scale = this.width / this.canvas.clientWidth;
@@ -94,7 +94,8 @@ class JSCanvas
 		this.ctx.fillStyle = "#000000";
 		this.ctx.strokeStyle = "#000000";
 		this.ctx.font = "10px Arial";
-		this.resolutionScale = 10;
+		this.resolutionScale = 1;
+		this.maxWidth = 4096;
 	}
 
 	/**
@@ -123,6 +124,7 @@ class JSCanvas
 	/**
 	 * Runs repeatedly as many times as possible using requestAnimationFrame
 	 * Also handles calling the this.action function
+	 * Good for animations when used with this.counter
 	 */
 	sanityCheck()
 	{
@@ -204,7 +206,7 @@ class JSCanvas
 	/**
 	 * Fixes the string that represents the shape type for the draw function into their canon values
 	 * @param {string} shape The shape to be processed by trimming and capitalizing before switching
-	 * @returns {string|*} returns the fixed string or the input if the input was invalid and unable to be fixed.
+	 * @returns {(string|*)} returns the fixed string or the input if the input was invalid and unable to be fixed.
 	 */
 	shapeType(shape)
 	{
@@ -247,8 +249,8 @@ class JSCanvas
 
 	/**
 	 * Draws a rectangle given x, y, width, method, and the color (optional).
-	 * @param {number|number[]} x The X position for the top left corner of the rectangle. First value used in arrays
-	 * @param {number|number[]} y The Y position for the top left corner of the rectangle. First value used in arrays
+	 * @param {(number|number[])} x The X position for the top left corner of the rectangle. First value used in arrays
+	 * @param {(number|number[])} y The Y position for the top left corner of the rectangle. First value used in arrays
 	 * @param {number[]} size The dimensions of the rectangle in [width, height] format. Extra inputs ignored
 	 * @param {string} [color] The hexidecimal value to color the rectangle. See this.fill (setter) for specifics. Defaults to last used color or #000000
 	 * @param {string} [method] Alters how the rectangle is formed (i.e. (x, y) refers to center. See function description for more details)
@@ -263,9 +265,9 @@ class JSCanvas
 
 	/**
 	 * Draws a circle given x, y, radius, and the color (optional).
-	 * @param {number|number[]} x The X position for the center of the circle. First value used in arrays
-	 * @param {number|number[]} y The Y position for the center of the circle. First value used in arrays
-	 * @param {number|number[]} r The radius of the circle. First value used in arrays.
+	 * @param {(number|number[])} x The X position for the center of the circle. First value used in arrays
+	 * @param {(number|number[])} y The Y position for the center of the circle. First value used in arrays
+	 * @param {(number|number[])} r The radius of the circle. First value used in arrays.
 	 * @param {string} [color] The hexidecimal value to color the circle. See this.fill (setter) for specifics. Defaults to last used color or #000000
 	 */
 	circ(x, y, r, color)
@@ -349,8 +351,8 @@ class JSCanvas
 
 	/**
 	 * Draws an image given a valid image object and positioning values
-	 * @param [object|string] image Valid Image object according to JavaScript Canvas documentation (may vary between browsers) or url/path of image file
-	 * @param [...number] positioning The positioning details according to JavaScript documentation on the canvas drawImage method.
+	 * @param {(object|string)} image Valid Image object according to JavaScript Canvas documentation (may vary between browsers) or url/path of image file
+	 * @param {...number} positioning The positioning details according to JavaScript documentation on the canvas drawImage method.
 	 */
 	img(image, ...positioning)
 	{
@@ -473,7 +475,7 @@ class JSCanvas
 	 * Most options are off by default but can be enabled through this.verbose[logType][originName] = true
 	 * @param {string} logType Type of log this is for (error, success, noAction, run, or excessive)
 	 * @param {string} originName Name of function or place where this log was called from
-	 * @param {string|*} message Message displayed by log or an item to log
+	 * @param {(string|*)} message Message displayed by log or an item to log
 	 * @param {*} additional Items to append to log
 	 */
 	verboseLog(logType, originName, message, ...additional)

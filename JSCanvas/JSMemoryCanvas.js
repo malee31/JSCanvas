@@ -165,32 +165,32 @@ class JSMemoryCanvas extends JSCanvas
 
 	/**
 	 * Adds a group of drawing inputs to be redrawn. To be implemented later
-	 * 
+	 * @param {object} group A draw group to be added
 	 */
 	addGroup(group) {this.drawGroups.push(group);}
 
 	/**
 	 * Pushes a copy of the inputs into the history after prepending a drawing method name
 	 * @param {string} methodName Drawing method to prepend to the inputs
-	 * @param {Array.*} args Inputs for drawing parameters
+	 * @param {Array} args Inputs for drawing parameters
 	 */
 	historyPusher(methodName, args)
 	{
 		if(Array.isArray(args) && args.length == 1)
 		{
 			this.verboseLog("noAction", "historyPusher", "Repeat draw, no push: ", methodName, args);
-			return args[0];
+			return;
 		}
 		var copied = this.inputArrayCopy(args, [methodName]);
 		this.verboseLog("success", "historyPusher", "History Pushing: ", args, "Rebuild: ", copied);
 		this.history.push(copied);
-		return args;
+		return;
 	}
 
 	/**
 	 * Makes a shallow copy of an array with a depth of two
-	 * @param {Array.*} arr Array to be copied
-	 * @param {Array.*} [base] Array to push a copy of arr into
+	 * @param {Array} arr Array to be copied
+	 * @param {Array} [base] Array to push a copy of arr into
 	 */
 	inputArrayCopy(arr, base)
 	{
