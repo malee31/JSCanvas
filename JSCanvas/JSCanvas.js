@@ -406,7 +406,7 @@ class JSCanvas
 	 */
 	colorFix(shape, color)
 	{
-		shape = shapeType(shape);
+		shape = this.shapeType(shape);
 		if(shape == "LINE" || shape == "CIRC") return this.colorChange(color, this.ctx.strokeStyle);
 		else return this.colorChange(color, this.ctx.fillStyle);
 	}

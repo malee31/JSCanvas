@@ -81,6 +81,9 @@ class JSMemoryCanvas extends JSCanvas
 			case "CIRC":
 				super.circ(...fed);
 			break;
+			case "TRI":
+				super.tri(...fed);
+			break;
 			case "LINE":
 				super.line(...fed);
 			break;
