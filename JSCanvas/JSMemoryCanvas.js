@@ -63,6 +63,10 @@ class JSMemoryCanvas extends JSCanvas
 			this.verboseLog("excessive", "redraw", memory);
 			this.softDraw(memory[0], ...memory.slice(1));
 		}
+		for(let group of this.drawGroups)
+		{
+			if(group.draw) group.draw();
+		}
 	}
 
 	/**
