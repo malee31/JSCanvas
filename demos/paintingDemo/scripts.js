@@ -3,6 +3,7 @@ const inputs = {
 	shape: document.getElementById("shape"),
 	color: document.getElementsByName("color")[0],
 	size: document.getElementsByName("size")[0],
+	additional: document.getElementsByName("additional")[0],
 	start: document.getElementsByName("start")[0],
 	x: document.getElementsByName("xCoords")[0],
 	y: document.getElementsByName("yCoords")[0]
@@ -44,6 +45,9 @@ function formShape()
 	//Resizing things to fit. Unnecessary except for useSize = false.
 	switch(shape[0])
 	{
+		case "IMG":
+			shape.push(inputs["additional"].value);
+		break;
 		case "CIRC":
 		case "RECT":
 			xPositions = xPositions.slice(0, 1);
@@ -56,14 +60,13 @@ function formShape()
 		case "POLY":
 			useSize = false;
 		break;
-		default:
-			
 	}
 
 	//Assembles arrays in the format JSCanvas accepts for drawing
 	shape.push(xPositions, yPositions);
 	if(useSize) shape.push(sizes);
 	shape.push(color);
+	if(shape[0] == "IMG") shape = shape.slice(0, 4);
 	return shape;
 }
 

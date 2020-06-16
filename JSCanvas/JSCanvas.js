@@ -359,11 +359,13 @@ class JSCanvas
 		if(typeof image == "string")
 		{
 			var newImg = new Image();
-			newImg.addEventListener("load", generatedImage => {
-				this.ctx.drawImage(generatedImage, ...positioning);
-			})
 			newImg.src = image;
 			newImg.alt = image;
+			//May be duplicate and unnecessary
+			newImg.addEventListener("load", generatedImage => {
+				this.ctx.drawImage(generatedImage.target, ...positioning);
+			})
+			this.ctx.drawImage(newImg, ...positioning);
 		}
 		else
 		{
