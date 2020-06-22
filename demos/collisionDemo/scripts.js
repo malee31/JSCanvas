@@ -1,4 +1,5 @@
 const JSCanv = new JSCanvas(document.getElementById("canv"));
+const testShapes = [];
 
 JSCanv.setAction(() => {
 	JSCanv.clear();
