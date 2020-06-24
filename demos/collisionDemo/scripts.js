@@ -2,7 +2,7 @@ const JSCanv = new JSCanvas(document.getElementById("canv"));
 const testShapes = [];
 
 JSCanv.setAction(() => {
-	JSCanv.clear();
+	//JSCanv.clear();
 	JSCanv.circ(JSCanv.cursor.x, JSCanv.cursor.y, 20, "#000");
 	var x = JSCanv.cursor.x - JSCanv.width / 2;
 	var y = JSCanv.cursor.y - JSCanv.height / 2;

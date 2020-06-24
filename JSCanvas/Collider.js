@@ -30,11 +30,21 @@ class Collider
 	 * Think of this as rotating the graph of points to straighten out the line horizontally and taking their new X positions.
 	 * @param {number[]} xCoords The X positions of the shape or set of points to project
 	 * @param {number[]} yCoords The Y positions of the shape or set of points to project
-	 * @returns {number[]} The points on the new X-axis after rotation/projection. Left-most point will be 0 and all points will shift accordingly
+	 * @param {number[]} [yInter] The Y intercept value of the line to project to
+	 * @returns {PointSet} The point positions after projection
 	 */
-	static project(xCoords, yCoords, slope)
+	static project(xCoords, yCoords, slope, yInter)
 	{
-		return "No";
+		//TODO: Account for slopes of undefined
+		var perpSlope = -1 / slope;
+		var projected = {x: [], y: []};
+		for(var coord = 0; coord < Math.min(xCoords.length, yCoords.length); coord++)
+		{
+			var y2Inter = -1 * (perpSlope * xCoords[coord] - yCoords[coord]);
+			projected["x"].push((y2Inter - yInter) / (slope - perpSlope));
+			projected["y"].push(projected["x"][coord] * slope + yInter);
+		}
+		return projected;
 	}
 
 	/**
