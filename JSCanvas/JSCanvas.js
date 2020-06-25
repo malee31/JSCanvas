@@ -241,10 +241,9 @@ class JSCanvas
 			case "POLYGON":
 				return "POLY";
 			break;
-			default:
-				this.verboseLog("noAction", "shapeType", "Invalid Shape Input Entered");
-				return shape;
 		}
+		this.verboseLog("noAction", "shapeType", "Invalid Shape Input Entered");
+		return shape;
 	}
 
 	/**
@@ -327,8 +326,8 @@ class JSCanvas
 	/**
 	 * Draws and Fills a polygon (Not recommended nor supported for hitbox collision detections)
 	 * Closing the shape with coordinates is optional and will be done automatically if the coordinates aren't supplied.
-	 * @param {number[]} xPositions Array of X positions for the triangle
-	 * @param {number[]} yPosition Array of Y positions for the triangle
+	 * @param {number[]} xPositions Array of X positions for the polygon
+	 * @param {number[]} yPosition Array of Y positions for the polygon
 	 * @param {string} [color] The hexidecimal value to color the circle. See this.fill (setter) for specifics. Defaults to last used color or #000000
 	 */
 	poly(xPositions, yPositions, color)
@@ -450,7 +449,7 @@ class JSCanvas
 	strokeColor(color) { this.stroke = color; }
 	rectangle(...args) { this.rect(...args); }
 	circle(...args) { this.circ(...args); }
-	triangle(...arg){ this.tri(...args); }
+	triangle(...arg) { this.tri(...args); }
 	image(...args) { this.img(...args); }
 	ln(...args) { this.line(...args); }
 	//scale(arg) { this.scalePixel(arg); }

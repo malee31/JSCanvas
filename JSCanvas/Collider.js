@@ -8,6 +8,12 @@ class Collider
 	 * @property {number[]} x Array of all the X coordinates in the set
 	 * @property {number[]} y Array of all the Y coordinates in the set
 	 */
+
+	/**
+	 * @typedef {Object} Point
+	 * @property {number} x X position of the point
+	 * @property {number} y Y position of the point
+	 */
 	
 	/**
 	 * Returns whether or not the object may have collided using arrays of points
@@ -22,6 +28,36 @@ class Collider
 		var minMax2 = [Math.min(...objX2), Math.max(...objX2)];
 		var totalLength = minMax1[1] - minMax1[0] + minMax2[1] - minMax2[0];
 		return totalLength > Math.max(minMax1[1], minMax2[1]) - Math.min(minMax1[0], minMax2[0]);
+	}
+
+	/**
+	 * Returns the inputs in the form of a Point object
+	 * @param {number|number[]} args Input an x followed by a y as either separate arguments or in an array.
+	 * @returns {Point}
+	 */
+	static pointify(...args)
+	{
+		if(args.length == 1 && Array.isArray(args[0])) return {x: args[0][0], y: args[0][1]};
+		else if(args.length == 2)
+		{
+			if(Array.isArray(args[0]) && Array.isArray(args[1])) return {x: args[0][0][0], y: args[0][1][0]};
+			else return {x: args[0], y: args[1]};
+		}
+		else return args[0];
+	}
+
+	/**
+	 * Returns the slope and y-intercept of a line through two points
+	 * @param {number[]} point1 An array with the x and y position of the first point respectively
+	 * @param {number[]} point2 An array with the x and y position of the second point respectively
+	 * @returns {number[]} An array containing the slope followed by the y-intercept
+	 */
+	static linify(point1, point2)
+	{
+		point1 = this.pointify(point1);
+		point2 = this.pointify(point2);
+		let slope = point2.y - point1.y / point2.x - point1.x;
+		return [slope, point1.y - point1.x * slope];
 	}
 	
 	/**
@@ -53,8 +89,8 @@ class Collider
 	 * @param {number[]} yCoords The Y positions of the sets of points to rotate
 	 * @param {number} angle The angle to rotate all the points by
 	 * @param {boolean} [isRadians] Whether the angle input is in radians. Will convert from degrees otherwise.
-	 * @param {number} [centerX] X position of the rotational origin. Defaults to 0
-	 * @param {number} [centerY] Y position of the rotational origin. Defaults to 0
+	 * @param {number} [centerX=0] X position of the rotational origin
+	 * @param {number} [centerY=0] Y position of the rotational origin
 	 * @returns {PointSet} Returns the rotated points in the form of an object
 	 */
 	static rotatePoints(xCoords, yCoords, angle, isRadians, centerX, centerY)
@@ -86,7 +122,6 @@ class Collider
 	 * @param {number} y The change in Y to calculate the slope and atan with relative to the origin
 	 * @param {boolean} [toDegrees] Whether or not to return a value in degrees or radians. Defaults to degrees
 	 * @returns {number} The full arctangent between 0 and 360 degrees (excluding 360) or its equivalent in radians 
-	 *
 	 */
 	static fullAtan(x, y, toDegrees)
 	{

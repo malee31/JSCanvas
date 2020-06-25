@@ -11,7 +11,7 @@ class JSMemoryCanvas extends JSCanvas
 		window.addEventListener("resize", () => {
 			this.updateResizers();
 			this.redraw();
-		})
+		});
 		this.restoreAllDefaults();
 	}
 
@@ -174,7 +174,7 @@ class JSMemoryCanvas extends JSCanvas
 	 * Adds a group of drawing inputs to be redrawn. To be implemented later
 	 * @param {object} group A draw group to be added
 	 */
-	addGroup(group) {this.drawGroups.push(group);}
+	addGroup(group) { this.drawGroups.push(group); }
 
 	/**
 	 * Pushes a copy of the inputs into the history after prepending a drawing method name
@@ -221,7 +221,7 @@ class JSMemoryCanvas extends JSCanvas
 			if(exportation.charAt(charIndex) == "]") deficit--;
 			if(deficit == 0)
 			{
-				exportation = `${exportation.slice(0, charIndex + 1)},\n\t${exportation.slice(charIndex + 2, exportation.length)}`; 
+				exportation = `${exportation.slice(0, charIndex + 1)},\n\t${exportation.slice(charIndex + 2, exportation.length)}`;
 				charIndex += 3;
 			}
 		}
