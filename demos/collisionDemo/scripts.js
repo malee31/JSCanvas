@@ -1,5 +1,5 @@
 const JSCanv = new JSCanvas(document.getElementById("canv"));
-const testShapes = [["POLY", [JSCanv.width / 2 - 1000, JSCanv.width / 2 - 500, JSCanv.width / 2 - 500, JSCanv.width / 2 - 1000], [JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250, JSCanv.height / 2 + 250], "#000"], ["POLY", [JSCanv.width / 2 + 1000, JSCanv.width / 2 + 1000, JSCanv.width / 2 + 500, JSCanv.width / 2 + 500], [JSCanv.height / 2 + 250, JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250], "#000"]];
+const testShapes = [["POLY", [JSCanv.width / 2 - 1000, JSCanv.width / 2 - 500, JSCanv.width / 2 - 500, JSCanv.width / 2 - 1000], [JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250, JSCanv.height / 2 + 250], "#0F0"], ["POLY", [JSCanv.width / 2 + 1000, JSCanv.width / 2 + 1000, JSCanv.width / 2 + 500, JSCanv.width / 2 + 500], [JSCanv.height / 2 + 250, JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250], "#00F"]];
 
 JSCanv.setAction(() => {
 	JSCanv.clear();
@@ -35,7 +35,7 @@ JSCanv.setAction(() => {
 		var projected = Collider.project(shape[1], shape[2], ...Collider.linify([lineX[0], lineY[0]], [lineX[1], lineY[1]]))
 		for(var point = 0; point < projected["x"].length; point++)
 		{
-			JSCanv.circ(projected["x"][point], projected["y"][point], 10, "#000");
+			JSCanv.circ(projected["x"][point], projected["y"][point], 15, shape[3]);
 		}
 	}
 });

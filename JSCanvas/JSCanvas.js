@@ -338,6 +338,7 @@ class JSCanvas
 			return;
 		}
 		this.stroke = color;
+		this.fill = color;
 		this.ctx.beginPath();
 		this.ctx.moveTo(xPositions[0], yPositions[0]);
 		for(var pos = 1; pos < Math.min(xPositions.length, yPositions.length); pos++)

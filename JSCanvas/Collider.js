@@ -56,7 +56,7 @@ class Collider
 	{
 		point1 = this.pointify(point1);
 		point2 = this.pointify(point2);
-		let slope = point2.y - point1.y / point2.x - point1.x;
+		let slope = (point2.y - point1.y) / (point2.x - point1.x);
 		return [slope, point1.y - point1.x * slope];
 	}
 	
