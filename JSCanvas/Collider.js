@@ -5,6 +5,7 @@ class Collider
 
 	/**
 	 * @typedef {Object} PointSet
+	 * @property {Point[]} points Array of all the coordinates in the set in a list
 	 * @property {number[]} x Array of all the X coordinates in the set
 	 * @property {number[]} y Array of all the Y coordinates in the set
 	 */
@@ -73,12 +74,13 @@ class Collider
 	{
 		//TODO: Account for slopes of undefined
 		var perpSlope = -1 / slope;
-		var projected = {x: [], y: []};
+		var projected = {points: [], x: [], y: []};
 		for(var coord = 0; coord < Math.min(xCoords.length, yCoords.length); coord++)
 		{
 			var y2Inter = -1 * (perpSlope * xCoords[coord] - yCoords[coord]);
 			projected["x"].push((y2Inter - yInter) / (slope - perpSlope));
 			projected["y"].push(projected["x"][coord] * slope + yInter);
+			projected["points"].push({x: projected["x"][coord], y: projected["y"][coord]});
 		}
 		return projected;
 	}
@@ -101,18 +103,17 @@ class Collider
 		var length = Math.min(xCoords.length, yCoords.length);
 		var cosAngle = Math.cos(angle);
 		var sinAngle = Math.sin(angle);
-		xCoords = xCoords.splice(0, length);
-		yCoords = yCoords.splice(0, length);
+		var rotated = {points: [], x: xCoords.slice(), y: yCoords.slice()};
 		for(let coord = 0; coord < length; coord++)
 		{
-			xCoords -= centerX;
-			yCoords -= centerY;
-			xCoords[coord] =  xCoords[coord] * cosAngle - yCoords[coord] * sinAngle;
-			yCoords[coord] =  xCoords[coord] * sinAngle + yCoords[coord] * cosAngle;
-			xCoords += centerX;
-			yCoords += centerY;
+			rotated.x[coord] -= centerX;
+			rotated.y[coord] -= centerY;
+			rotated.x[coord] = rotated.x[coord] * cosAngle - rotated.y[coord] * sinAngle;
+			rotated.y[coord] = rotated.x[coord] * sinAngle + rotated.y[coord] * cosAngle;
+			rotated.x[coord] += centerX;
+			rotated.y[coord] += centerY;
 		}
-		return {x: xCoords, y: yCoords};
+		return rotated;
 	}
 
 	/**

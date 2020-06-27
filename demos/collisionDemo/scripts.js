@@ -15,6 +15,7 @@ JSCanv.setAction(() => {
 	var plusMinus = 0;
 	var lineX = [];
 	var lineY = [];
+	var projectShapes = [];
 	if((angle > 45 && angle < 135) || (angle > 225 && angle < 315))
 	{
 		var xInter = cent.y / tan;
@@ -36,6 +37,12 @@ JSCanv.setAction(() => {
 		for(var point = 0; point < projected["x"].length; point++)
 		{
 			JSCanv.circ(projected["x"][point], projected["y"][point], 15, shape[3]);
+			JSCanv.line([projected["x"][point], shape[1][point]], [projected["y"][point], shape[2][point]], shape[3]);
 		}
+		JSCanv.line(projected["x"], projected["y"], shape[shape.length - 1]);
+		projectShapes.push(projected);
 	}
+
+	//if(Collider.shadowTest(projectShapes[0], projectShapes[1])) JSCanv.circ(60, 60, 50, "#F00");
+	//else JSCanv.circ(60, 60, 50, "#0F0");
 });
