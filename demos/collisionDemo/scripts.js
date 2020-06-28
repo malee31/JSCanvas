@@ -1,5 +1,7 @@
 const JSCanv = new JSCanvas(document.getElementById("canv"));
 const testShapes = [["POLY", [JSCanv.width / 2 - 1000, JSCanv.width / 2 - 500, JSCanv.width / 2 - 500, JSCanv.width / 2 - 1000], [JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250, JSCanv.height / 2 + 250], "#0F0"], ["POLY", [JSCanv.width / 2 + 1000, JSCanv.width / 2 + 1000, JSCanv.width / 2 + 500, JSCanv.width / 2 + 500], [JSCanv.height / 2 + 250, JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250], "#00F"]];
+const shiftIncrement = 100;
+var currentTime = -1;
 
 JSCanv.setAction(() => {
 	JSCanv.clear();
@@ -37,12 +39,28 @@ JSCanv.setAction(() => {
 		for(var point = 0; point < projected["x"].length; point++)
 		{
 			JSCanv.circ(projected["x"][point], projected["y"][point], 15, shape[3]);
+			JSCanv.circ(shape[1][point], shape[2][point], 15, shape[3]);
 			JSCanv.line([projected["x"][point], shape[1][point]], [projected["y"][point], shape[2][point]], shape[3]);
 		}
 		JSCanv.line(projected["x"], projected["y"], shape[shape.length - 1]);
 		projectShapes.push(projected);
 	}
 
-	//if(Collider.shadowTest(projectShapes[0], projectShapes[1])) JSCanv.circ(60, 60, 50, "#F00");
-	//else JSCanv.circ(60, 60, 50, "#0F0");
+	//ShadowTesting Successful!!!
+	if(Collider.shadowTest(projectShapes[0], projectShapes[1])) JSCanv.circ(60, 60, 50, "#F00");
+	else JSCanv.circ(60, 60, 50, "#0F0");
+
+	//Code for making the shapes shift around go here
+	if(JSCanv.mouseDown && JSCanv.counter != currentTime)
+	{
+		currentTime = JSCanv.counter;
+		for(var shapeNum = 0; shapeNum < testShapes.length; shapeNum++)
+		{
+			for(var pointPos = 0; pointPos < testShapes[shapeNum].length; pointPos++)
+			{
+				if(shapeNum == 0) testShapes[shapeNum][1][pointPos] += shiftIncrement;
+				else testShapes[shapeNum][1][pointPos] -= shiftIncrement;
+			}
+		}
+	}
 });

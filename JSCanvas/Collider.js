@@ -19,16 +19,19 @@ class Collider
 	/**
 	 * Returns whether or not the object may have collided using arrays of points
 	 * created by projecting points onto a line. Touching not counted as collided (i.e. startpoint2 = endpoint1)
-	 * @param {number[]} objX1 Array of the first shape's X positions / relevant positions on the line after projection.
-	 * @param {number[]} objX2 Array of the second shape's X positions / relevant positions on the line after projection.
-	 * @returns {boolean} Whether the two objects may have collided. False means they haven't but there's still a potential on True.
+	 * @param {PointSet} obj1 A set of the projected points of the first object to check for collisions with. Must be on the same line as obj2
+	 * @param {PointSet} obj2 A set of the projected points of the second object to check for collisions with. Must be on the same line as obj1
+	 * @returns {boolean} Whether the two objects may have collided. False means they haven't but there's still a potential on True. Exact contact is a False
 	 */
-	static shadowTest(objX1, objX2)
+	static shadowTest(obj1, obj2)
 	{
-		var minMax1 = [Math.min(...objX1), Math.max(...objX1)];
-		var minMax2 = [Math.min(...objX2), Math.max(...objX2)];
-		var totalLength = minMax1[1] - minMax1[0] + minMax2[1] - minMax2[0];
-		return totalLength > Math.max(minMax1[1], minMax2[1]) - Math.min(minMax1[0], minMax2[0]);
+		var minMax1 = {xMin: Math.min(...obj1["x"]), xMax: Math.max(...obj1["x"]), yMin: Math.min(...obj1["y"]), yMax: Math.max(...obj1["y"])};
+		var minMax2 = {xMin: Math.min(...obj2["x"]), xMax: Math.max(...obj2["x"]), yMin: Math.min(...obj2["y"]), yMax: Math.max(...obj2["y"])};
+		minMax1.dist = Math.hypot((minMax1.xMax - minMax1.xMin), (minMax1.yMax - minMax1.yMin));
+		minMax2.dist = Math.hypot((minMax2.xMax - minMax2.xMin), (minMax2.yMax - minMax2.yMin));
+		//minMax2.dist = ((minMax2.xMax - minMax2.xMin) ** 2 + (minMax2.yMax - minMax2.yMin) ** 2) ** 0.5;
+		var totalLength = minMax1.dist + minMax2.dist;
+		return totalLength > Math.hypot(Math.max(minMax1.xMax, minMax2.xMax) - Math.min(minMax1.xMin, minMax2.xMin), Math.max(minMax1.yMax, minMax2.yMax) - Math.min(minMax1.yMin, minMax2.yMin));
 	}
 
 	/**
