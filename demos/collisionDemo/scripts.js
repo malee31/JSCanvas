@@ -54,12 +54,31 @@ JSCanv.setAction(() => {
 	if(JSCanv.mouseDown && JSCanv.counter != currentTime)
 	{
 		currentTime = JSCanv.counter;
+		var move = true;
 		for(var shapeNum = 0; shapeNum < testShapes.length; shapeNum++)
 		{
 			for(var pointPos = 0; pointPos < testShapes[shapeNum].length; pointPos++)
 			{
-				if(shapeNum == 0) testShapes[shapeNum][1][pointPos] += shiftIncrement * (x < 0 ? -1 : 1);
-				else if(shapeNum == 1) testShapes[shapeNum][1][pointPos] -= shiftIncrement * (x < 0 ? -1 : 1);
+				if(shapeNum == 0)
+				{
+					if((testShapes[shapeNum][1][pointPos] <= 0 && x < 0) || (testShapes[shapeNum][1][pointPos] >= JSCanv.width && x >= 0)) move = false;
+				}
+				else if(shapeNum == 1)
+				{
+					if((testShapes[shapeNum][1][pointPos] <= 0 && x >= 0) || (testShapes[shapeNum][1][pointPos] >= JSCanv.width && x < 0)) move = false;
+				}
+			}
+		}
+
+		if(move)
+		{
+			for(var shapeNum = 0; shapeNum < testShapes.length; shapeNum++)
+			{
+				for(var pointPos = 0; pointPos < testShapes[shapeNum].length; pointPos++)
+				{
+					if(shapeNum == 0) testShapes[shapeNum][1][pointPos] += shiftIncrement * (x < 0 ? -1 : 1);
+					else if(shapeNum == 1) testShapes[shapeNum][1][pointPos] -= shiftIncrement * (x < 0 ? -1 : 1);
+				}
 			}
 		}
 	}
