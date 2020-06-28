@@ -118,7 +118,7 @@ class JSCanvas
 		//Results in 9000000000000000
 		this.timerLoop = Number.MAX_SAFE_INTEGER - 7199254740991;
 		requestAnimationFrame(this.sanityCheck.bind(this));
-		this.timer = setInterval(this.tick.bind(this), 500);
+		this.timer = setInterval(this.tick.bind(this), 1);
 	}
 
 	/**

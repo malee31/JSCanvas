@@ -58,8 +58,8 @@ JSCanv.setAction(() => {
 		{
 			for(var pointPos = 0; pointPos < testShapes[shapeNum].length; pointPos++)
 			{
-				if(shapeNum == 0) testShapes[shapeNum][1][pointPos] += shiftIncrement;
-				else testShapes[shapeNum][1][pointPos] -= shiftIncrement;
+				if(shapeNum == 0) testShapes[shapeNum][1][pointPos] += shiftIncrement * (x < 0 ? -1 : 1);
+				else if(shapeNum == 1) testShapes[shapeNum][1][pointPos] -= shiftIncrement * (x < 0 ? -1 : 1);
 			}
 		}
 	}
