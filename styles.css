@@ -36,11 +36,10 @@ a {
 	color: #3070D0;
 }
 
-span {
-	display: none;
-	color: #3070D0;
+a:hover .caret::before {
+	content: "> ";
 }
 
-a:hover span {
-	display: initial;
+a:hover .caret::after {
+	content: " <";
 }
