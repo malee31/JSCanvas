@@ -51,13 +51,14 @@ class Collider
 	 * Returns the slope and y-intercept of a line through two points
 	 * @param {number[]} point1 An array with the x and y position of the first point respectively
 	 * @param {number[]} point2 An array with the x and y position of the second point respectively
-	 * @returns {number[]} An array containing the slope followed by the y-intercept
+	 * @returns {number[]} An array containing the slope followed by the y-intercept. Returns [NaN, xIntercept] on a slope of undefined or larger/lower than +/- 10^9
 	 */
 	static linify(point1, point2)
 	{
 		point1 = this.pointify(point1);
 		point2 = this.pointify(point2);
 		let slope = (point2.y - point1.y) / (point2.x - point1.x);
+		if(slope == Infinity || Math.abs(slope) > Math.pow(10, 9)) return [NaN, point1.x];
 		return [slope, point1.y - point1.x * slope];
 	}
 	
@@ -67,19 +68,24 @@ class Collider
 	 * Think of this as rotating the graph of points to straighten out the line horizontally and taking their new X positions.
 	 * @param {number[]} xCoords The X positions of the shape or set of points to project
 	 * @param {number[]} yCoords The Y positions of the shape or set of points to project
-	 * @param {number[]} [yInter] The Y intercept value of the line to project to
+	 * @param {number[]} [intercept=0] The Y intercept value of the line to project to or the X intercept for an undefined slope
 	 * @returns {PointSet} The point positions after projection
 	 */
-	static project(xCoords, yCoords, slope, yInter)
+	static project(xCoords, yCoords, slope, intercept)
 	{
-		//TODO: Account for slopes of undefined
 		var perpSlope = -1 / slope;
 		var projected = {points: [], x: [], y: []};
 		for(var coord = 0; coord < Math.min(xCoords.length, yCoords.length); coord++)
 		{
+			if(isNaN(slope))
+			{
+				projected["x"].push(intercept);
+				projected["y"].push(yCoords[coord]);
+				continue;
+			}
 			var y2Inter = -1 * (perpSlope * xCoords[coord] - yCoords[coord]);
-			projected["x"].push((y2Inter - yInter) / (slope - perpSlope));
-			projected["y"].push(projected["x"][coord] * slope + yInter);
+			projected["x"].push((y2Inter - intercept) / (slope - perpSlope));
+			projected["y"].push(projected["x"][coord] * slope + intercept);
 			projected["points"].push({x: projected["x"][coord], y: projected["y"][coord]});
 		}
 		return projected;
