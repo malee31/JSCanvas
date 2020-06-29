@@ -1,6 +1,6 @@
 const JSCanv = new JSCanvas(document.getElementById("canv"));
 const testShapes = [["POLY", [JSCanv.width / 2 - 1000, JSCanv.width / 2 - 500, JSCanv.width / 2 - 500, JSCanv.width / 2 - 1000], [JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250, JSCanv.height / 2 + 250], "#0F0"], ["POLY", [JSCanv.width / 2 + 1000, JSCanv.width / 2 + 1000, JSCanv.width / 2 + 500, JSCanv.width / 2 + 500], [JSCanv.height / 2 + 250, JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250], "#00F"]];
-const shiftIncrement = 100;
+const shiftIncrement = 50;
 var currentTime = -1;
 
 JSCanv.setAction(() => {
@@ -76,8 +76,8 @@ JSCanv.setAction(() => {
 			{
 				for(var pointPos = 0; pointPos < testShapes[shapeNum].length; pointPos++)
 				{
-					if(shapeNum == 0) testShapes[shapeNum][1][pointPos] += shiftIncrement * (x < 0 ? -1 : 1);
-					else if(shapeNum == 1) testShapes[shapeNum][1][pointPos] -= shiftIncrement * (x < 0 ? -1 : 1);
+					if(shapeNum == 0) testShapes[shapeNum][1][pointPos] += shiftIncrement * Math.cos(Collider.toRadians(angle));
+					else if(shapeNum == 1) testShapes[shapeNum][1][pointPos] -= shiftIncrement * Math.cos(Collider.toRadians(angle));
 				}
 			}
 		}

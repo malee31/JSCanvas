@@ -15,7 +15,20 @@ class Collider
 	 * @property {number} x X position of the point
 	 * @property {number} y Y position of the point
 	 */
-	
+
+	/**
+	 * Complete check for collision using the SAT Method (Separating Axis Theorem)
+	 * Only works on convex shapes at the moment, excluding circles
+	 * TODO: Separate concave shapes for testing
+	 * @param {PointSet} obj1 Points for the first shape to check for collision using
+	 * @param {PointSet} obj2 Points for the second shape to check for collision using
+	 * @returns {boolean} Whether or not the two objects have collided
+	 */
+	static collisionTestSAT(obj1, obj2)
+	{
+		return false;
+	}
+
 	/**
 	 * Returns whether or not the object may have collided using arrays of points
 	 * created by projecting points onto a line. Touching not counted as collided (i.e. startpoint2 = endpoint1)
@@ -63,6 +76,18 @@ class Collider
 		let slope = (point2.y - point1.y) / (point2.x - point1.x);
 		if(slope == Infinity || Math.abs(slope) > Math.pow(10, 9)) return [NaN, point1.x];
 		return [slope, point1.y - point1.x * slope];
+	}
+
+	/**
+	 * Calculates the y Intercept of a line given the slope and a point
+	 * @param {number} slope Slope of the line
+	 * @param {Point} point Point that the line passes through
+	 * @returns {number} The y-intercept of the line (or NaN for an invalid slope or NaN slope)
+	 */
+	static interceptCalc(slope, point)
+	{
+		if(typeof slope != "number" || isNaN(slope)) return NaN;
+		return (point["y"] - slope * point["x"]);
 	}
 	
 	/**
