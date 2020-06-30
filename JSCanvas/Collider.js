@@ -1,4 +1,4 @@
-/** Class containing functions to test for collisions using SAT */
+/** Class containing functions to test for collisions using the SAT method */
 class Collider
 {
 	//No constructor needed
@@ -26,7 +26,26 @@ class Collider
 	 */
 	static collisionTestSAT(obj1, obj2)
 	{
-		return false;
+		var points1 = obj1.points;
+		var points2 = obj2.points;
+		var currentPoints = points1;
+		var line;
+		for(var lineToCheck = 0; lineToCheck < points1.length + points2.length; lineToCheck++)
+		{
+			if(lineToCheck == points1.length + 1)
+			{
+				currentPoints = points2;
+				continue;
+			}
+			var pt1 = currentPoints[lineToCheck % points1.length];
+			var pt2 = currentPoints[(lineToCheck + 1) % points1.length % points2.length];
+			line = this.linify(pt1, pt2);
+			line[0] = isNaN(line[0]) ? 0 : line[0] == 0 ? NaN : -1 / line[0];
+			var proj1 = this.project(obj1["x"], obj1["y"], line[0]);
+			var proj2 = this.project(obj2["x"], obj2["y"], line[0]);
+			if(!this.shadowTest(proj1, proj2)) return false;
+		}
+		return true;
 	}
 
 	/**
@@ -34,7 +53,7 @@ class Collider
 	 * created by projecting points onto a line. Touching not counted as collided (i.e. startpoint2 = endpoint1)
 	 * @param {PointSet} obj1 A set of the projected points of the first object to check for collisions with. Must be on the same line as obj2
 	 * @param {PointSet} obj2 A set of the projected points of the second object to check for collisions with. Must be on the same line as obj1
-	 * @returns {boolean} Whether the two objects may have collided. False means they haven't but there's still a potential on True. Exact contact is a False
+	 * @returns {boolean} Whether the two objects may have collided. False means they haven't but True means check another angle. Exact contact is a True
 	 */
 	static shadowTest(obj1, obj2)
 	{
@@ -44,7 +63,7 @@ class Collider
 		minMax2.dist = Math.hypot((minMax2.xMax - minMax2.xMin), (minMax2.yMax - minMax2.yMin));
 		//minMax2.dist = ((minMax2.xMax - minMax2.xMin) ** 2 + (minMax2.yMax - minMax2.yMin) ** 2) ** 0.5;
 		var totalLength = minMax1.dist + minMax2.dist;
-		return totalLength > Math.hypot(Math.max(minMax1.xMax, minMax2.xMax) - Math.min(minMax1.xMin, minMax2.xMin), Math.max(minMax1.yMax, minMax2.yMax) - Math.min(minMax1.yMin, minMax2.yMin));
+		return totalLength >= Math.hypot(Math.max(minMax1.xMax, minMax2.xMax) - Math.min(minMax1.xMin, minMax2.xMin), Math.max(minMax1.yMax, minMax2.yMax) - Math.min(minMax1.yMin, minMax2.yMin));
 	}
 
 	/**
@@ -64,9 +83,28 @@ class Collider
 	}
 
 	/**
+	 * Returns the inputs in the form of a PointSet object
+	 * @param {number[]} xCoords The X positions of the shape or set of points to push into the PointSet
+	 * @param {number[]} yCoords The Y positions of the shape or set of points to push into the PointSet
+	 * @returns {PointSet}
+	 */
+	static pointSetify(xCoords, yCoords)
+	{
+		var length = Math.min(xCoords.length, yCoords.length);
+		var set = {points: [], x: [], y: []};
+		for(var coord = 0; coord < length; coord++)
+		{
+			set["x"].push(xCoords[coord]);
+			set["y"].push(yCoords[coord]);
+			set["points"].push({x: xCoords[coord], y: yCoords[coord]});
+		}
+		return set;
+	}
+
+	/**
 	 * Returns the slope and y-intercept of a line through two points
-	 * @param {number[]} point1 An array with the x and y position of the first point respectively
-	 * @param {number[]} point2 An array with the x and y position of the second point respectively
+	 * @param {number[]|Point} point1 An array with the x and y position of the first point respectively or point one
+	 * @param {number[]|Point} point2 An array with the x and y position of the second point respectively or point two
 	 * @returns {number[]} An array containing the slope followed by the y-intercept. Returns [NaN, xIntercept] on a slope of undefined or larger/lower than +/- 10^9
 	 */
 	static linify(point1, point2)
@@ -96,11 +134,14 @@ class Collider
 	 * Think of this as rotating the graph of points to straighten out the line horizontally and taking their new X positions.
 	 * @param {number[]} xCoords The X positions of the shape or set of points to project
 	 * @param {number[]} yCoords The Y positions of the shape or set of points to project
+	 * @param {number} slope The slope of the line to project onto.
 	 * @param {number[]} [intercept=0] The Y intercept value of the line to project to or the X intercept for an undefined slope
 	 * @returns {PointSet} The point positions after projection
 	 */
 	static project(xCoords, yCoords, slope, intercept)
 	{
+		//Slope 0 not working lmao
+		intercept = typeof intercept == "number" ? intercept : 0;
 		var perpSlope = -1 / slope;
 		var projected = {points: [], x: [], y: []};
 		for(var coord = 0; coord < Math.min(xCoords.length, yCoords.length); coord++)
@@ -109,6 +150,13 @@ class Collider
 			{
 				projected["x"].push(intercept);
 				projected["y"].push(yCoords[coord]);
+				continue;
+			}
+			if(slope == 0)
+			{
+				projected["x"].push(xCoords[coord]);
+				projected["y"].push(intercept);
+				projected["points"].push({x: projected["x"][coord], y: projected["y"][coord]});
 				continue;
 			}
 			var y2Inter = -1 * (perpSlope * xCoords[coord] - yCoords[coord]);
