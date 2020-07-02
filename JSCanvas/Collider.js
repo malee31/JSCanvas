@@ -127,7 +127,34 @@ class Collider
 		if(typeof slope != "number" || isNaN(slope)) return NaN;
 		return (point["y"] - slope * point["x"]);
 	}
-	
+
+	/**
+	 * Determines whether a shape in concave given it's points in order
+	 * @param {PointSet} shape The points of the shape
+	 * @returns {boolean} Whether the given shape is concave or not
+	 */
+	static isConcave(shape)
+	{
+		var quadrant = [NaN];
+		for(var point = 0; point < shape["points"].length; point++)
+		{
+			var p1 = shape["points"][point];
+			var p2 = shape["points"][(point + 1) % shape["points"].length];
+			//TODO: Implement this. Plan is to check all quadrants to make sure it's only going one direction, CW or CCW.
+			var relativePosition = {x: p2.x - p1.x, y: p2.y - p1.y};
+			if(!isNaN(quadrant[0]) && false) return true;
+			else
+			{
+				if(relativePosition.x == 0)
+				{
+					
+				}
+				quadrant = NaN;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Projects points onto a line and returns their X positions relative to the line.
 	 * The closest point to the left will be assigned as 0 after projection and all points will shift accordingly.
