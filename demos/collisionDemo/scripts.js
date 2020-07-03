@@ -47,12 +47,12 @@ JSCanv.setAction(() => {
 	}
 
 	//ShadowTesting Successful!!!
-	if(Collider.shadowTest(projectShapes[0], projectShapes[1])) JSCanv.circ(60, 60, 50, "#0F0");
-	else JSCanv.circ(60, 60, 50, "#F00");
+	if(Collider.shadowTest(projectShapes[0], projectShapes[1])) JSCanv.rect(10, 15, [90, 90], "#0F0");
+	else JSCanv.rect(10, 15, [90, 90], "#F00");
 
 	//Complete Collision Testing TODO: Convert from JSCanvas Notation to Object / PointSet Notation
-	if(Collider.collisionTestSAT(Collider.pointSetify(testShapes[0][1], testShapes[0][2]), Collider.pointSetify(testShapes[1][1], testShapes[1][2]))) JSCanv.rect(120, 10, [100, 100], "#0F0");
-	else JSCanv.rect(120, 10, [100, 100], "#F00");
+	if(Collider.collisionTestSAT(Collider.pointSetify(testShapes[0][1], testShapes[0][2]), Collider.pointSetify(testShapes[1][1], testShapes[1][2]))) JSCanv.circ(160, 60, 50, "#0F0");
+	else JSCanv.circ(160, 60, 50, "#F00");
 
 	//Code for making the shapes shift around go here
 	if(JSCanv.mouseDown && JSCanv.counter != currentTime)

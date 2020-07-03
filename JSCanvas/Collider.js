@@ -226,6 +226,31 @@ class Collider
 	}
 
 	/**
+	 * Returns the quadrant a point is in relative to another point
+	 * @param {Point} point Point to find the quadrant of
+	 * @param {Point} [reference] Reference point to get the quadrant of the point from. Defaults to the origin (0, 0)
+	 * @returns {number[]} Returns the correct quadrants [1-4] normally but an array of the two neighboring quadrants if the point is on an axis
+	 */
+	 static quadrant(point, reference)
+	 {
+		var quadrants = [];
+	 	if(typeof reference != "object") reference = {x: 0, y: 0};
+		var shifted = {x: point.x - reference.x, y: point.y - reference.y};
+		
+		if(shifted.x >= 0)
+		{
+			if(shifted.y >= 0) quadrants.push(1);
+			if(shifted.y <= 0) quadrants.push(4);
+		}
+		if(shifted.x <= 0)
+		{
+			if(shifted.y >= 0) quadrants.push(2);
+			if(shifted.y <= 0) quadrants.push(3);
+		}
+		return quadrants.sort();
+	 }
+
+	/**
 	 * Computes the arctangent of a slope relative to 3 o'clock counterclockwise
 	 * Able to return a range between 0 and 360 (excludes 360)
 	 * @param {number} x The change in X to calculate the slope and atan with relative to the origin
