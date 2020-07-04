@@ -135,21 +135,65 @@ class Collider
 	 */
 	static isConcave(shape)
 	{
-		var quadrant = [NaN];
-		for(var point = 0; point < shape["points"].length; point++)
+		var allPoints = shape["points"];
+		if(allPoints.length <= 3) return false;
+		//This determines clockwise(-1) or counterclockwise(+1)
+		var quadrantDiff = 0;;
+		var quads = [];
+		for(var point = 0; point < allPoints.length; point++)
 		{
-			var p1 = shape["points"][point];
-			var p2 = shape["points"][(point + 1) % shape["points"].length];
+			//Quadrant of next coord index relative to this coord index
+			var relQuad = this.quadrant(allPoints[(point + 1) % allPoints.length], allPoints[point]);
 			//TODO: Implement this. Plan is to check all quadrants to make sure it's only going one direction, CW or CCW.
-			var relativePosition = {x: p2.x - p1.x, y: p2.y - p1.y};
-			if(!isNaN(quadrant[0]) && false) return true;
+			if(quadrantDiff == 0)
+			{
+				//Skips exact same points
+				if(relQuad.length == 4) continue;
+				if(quads.length < 0 || quads[quads.length - 1].length != relQuad.length || !quads[quads.length - 1].every(val => relQuad.includes(val))) quads.push(relQuad);
+				if(quads.length == 2)
+				{
+					//Find out if it's clockwise or counter-clockwise here and set quadrantDiff to 1 or -1
+					//OH GOD IT'S SPAGHETTI CODE *AND* IT DOESN'T WORK IT'S A NIGHTMARE WHY WHY WHYYYYY
+					if(quad[0].length == 2)
+					{
+						var currentQuad = quad[1].includes(quad[0][0]) ? quad[0][1] : quad[0][0];
+						if(quad[1].length == 1) var compareTo = quad[1][0];
+						else var compareTo = quad[1][quad[0].includes(quad[1][0]) ? 1 : 0];
+					}
+					else if(quad[0].length == 2 && quad[1].length == 1)
+					{
+						var compareTo = quad[1][0];
+					}
+					else if(quad[0].length == 1 && quad[1].length == 2)
+					{
+						var currentQuad = quad[0][0];
+						var compareTo = quad[1][0];
+					}
+					else
+					{
+						var currentQuad = quad[0][0];
+						var compareTo = quad[1][0];
+					}
+					switch(currentQuad)
+					{
+						case this.quadrantShift(compareTo, 1):
+						case this.quadrantShift(compareTo, 2):
+							//CCW
+							quadrantDiff = 1;
+						break;
+						case this.quadrantShift(compareTo, 3):
+							quadrantDiff = -1;
+						break;
+						case this.quadrantShift(compareTo, 4):
+							console.log("Oop full circle and vvv");
+						default:
+							console.log("Something went wrong");
+					}
+				}
+			}
 			else
 			{
-				if(relativePosition.x == 0)
-				{
-					
-				}
-				quadrant = NaN;
+				//Fun spinny stuff
 			}
 		}
 		return false;
@@ -248,6 +292,21 @@ class Collider
 			if(shifted.y <= 0) quadrants.push(3);
 		}
 		return quadrants.sort();
+	 }
+
+	 /**
+	  * Shifts the quadrant number by a value counterclockwise
+	  * @param {number} quad Current quadrant number to shift
+	  * @param {number} [shift] Number to shift by. Defaults to +1. Use 0 to normalize an irregular quadrant number
+	  * @param {boolean} [normalize] whether to keep the numbers between 1-4 or 1+. Defaults to true (1-4)
+	  * @returns {number} Quadrant number after shifting. Returns values between 1-4 inclusive
+	  */
+	 static quadrantShift(quad, shift, normalize)
+	 {
+		shift = typeof shift == "number" ? shift : 1;
+	 	var res = (quad + shift) % 4;
+		if(res < 0) res += 4;
+		return res == 0 ? 4 : res;
 	 }
 
 	/**

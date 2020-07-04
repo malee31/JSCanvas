@@ -4,3 +4,6 @@ testing/
 # Vim Swap Files
 *.swo
 *.swp
+
+#ctags
+tags
