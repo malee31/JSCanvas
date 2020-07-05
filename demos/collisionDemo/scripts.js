@@ -1,5 +1,22 @@
 const JSCanv = new JSCanvas(document.getElementById("canv"));
-const testShapes = [["POLY", [JSCanv.width / 2 - 1000, JSCanv.width / 2 - 500, JSCanv.width / 2 - 500, JSCanv.width / 2 - 1000], [JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250, JSCanv.height / 2 + 250], "#0F0"], ["POLY", [JSCanv.width / 2 + 1000, JSCanv.width / 2 + 1000, JSCanv.width / 2 + 500, JSCanv.width / 2 + 500], [JSCanv.height / 2 + 250, JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250], "#00F"]];
+const testShapes = [
+	["POLY",
+		[JSCanv.width / 2 - 1000, JSCanv.width / 2 - 500, JSCanv.width / 2 - 500, JSCanv.width / 2 - 1000],
+		[JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250, JSCanv.height / 2 + 250],
+	"#0F0"],
+	["POLY",
+		[JSCanv.width / 2 + 1000, JSCanv.width / 2 + 1000, JSCanv.width / 2 + 500, JSCanv.width / 2 + 500],
+		[JSCanv.height / 2 + 250, JSCanv.height / 2 - 250, JSCanv.height / 2 - 250, JSCanv.height / 2 + 250],
+	"#00F"],
+	["POLY",
+		[1941.5857011915673,2541.5857011915673,2341.5857011915673,2141.5857011915673],
+		[781.6773602199817,981.6773602199817,1381.6773602199817,1281.6773602199817],
+	"#00F"],
+	["POLY",
+		[1729.0559120073326,2129.0559120073326,1929.0559120073326,2029.0559120073326],
+		[821.3015582034831,921.3015582034831,1071.3015582034832,1521.3015582034832],
+	"#000000"]
+];
 const shiftIncrement = 50;
 var currentTime = -1;
 
@@ -32,8 +49,9 @@ JSCanv.setAction(() => {
 	}
 	JSCanv.line(lineX, lineY, "#000");
 
-	for(let shape of testShapes)
+	for(var testNum = 0; testNum < 2; testNum++)
 	{
+		var shape=testShapes[testNum];
 		JSCanv.draw(...shape);
 		var projected = Collider.project(shape[1], shape[2], ...Collider.linify([lineX[0], lineY[0]], [lineX[1], lineY[1]]))
 		for(var point = 0; point < projected["x"].length; point++)

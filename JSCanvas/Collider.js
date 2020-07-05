@@ -137,65 +137,33 @@ class Collider
 	{
 		var allPoints = shape["points"];
 		if(allPoints.length <= 3) return false;
-		//This determines clockwise(-1) or counterclockwise(+1)
-		var quadrantDiff = 0;;
-		var quads = [];
+		//This determines if the angle measured is the inner(true) or outer(false)
+		var counterClockwise;
+		var angleLog = [];
 		for(var point = 0; point < allPoints.length; point++)
 		{
-			//Quadrant of next coord index relative to this coord index
-			var relQuad = this.quadrant(allPoints[(point + 1) % allPoints.length], allPoints[point]);
-			//TODO: Implement this. Plan is to check all quadrants to make sure it's only going one direction, CW or CCW.
-			if(quadrantDiff == 0)
+			let prevPoint = allPoints[(allPoints.length - 1 + point) % allPoints.length];
+			let previousAngle = angleLog[(allPoints.length - 1 + point) % allPoints.length];
+			let currentPoint = allPoints[point];
+			let relPoint = {x: currentPoint.x - prevPoint.x, y: currentPoint.y - prevPoint.y}
+			let currentAngle = this.fullAtan(relPoint.x, relPoint.y);
+			angleLog.push(currentAngle);
+			if(previousAngle == currentAngle || (previousAngle + 180) % 360 == currentAngle) continue;
+			else if(angleLog.length >= 2)
 			{
-				//Skips exact same points
-				if(relQuad.length == 4) continue;
-				if(quads.length < 0 || quads[quads.length - 1].length != relQuad.length || !quads[quads.length - 1].every(val => relQuad.includes(val))) quads.push(relQuad);
-				if(quads.length == 2)
+				var isBetween = previousAngle < currentAngle && (currentAngle < previousAngle + 180 || currentAngle < (previousAngle + 180) % 360);
+				if(typeof counterClockwise != "boolean" && angleLog.length >= 2)
 				{
-					//Find out if it's clockwise or counter-clockwise here and set quadrantDiff to 1 or -1
-					//OH GOD IT'S SPAGHETTI CODE *AND* IT DOESN'T WORK IT'S A NIGHTMARE WHY WHY WHYYYYY
-					if(quad[0].length == 2)
-					{
-						var currentQuad = quad[1].includes(quad[0][0]) ? quad[0][1] : quad[0][0];
-						if(quad[1].length == 1) var compareTo = quad[1][0];
-						else var compareTo = quad[1][quad[0].includes(quad[1][0]) ? 1 : 0];
-					}
-					else if(quad[0].length == 2 && quad[1].length == 1)
-					{
-						var compareTo = quad[1][0];
-					}
-					else if(quad[0].length == 1 && quad[1].length == 2)
-					{
-						var currentQuad = quad[0][0];
-						var compareTo = quad[1][0];
-					}
-					else
-					{
-						var currentQuad = quad[0][0];
-						var compareTo = quad[1][0];
-					}
-					switch(currentQuad)
-					{
-						case this.quadrantShift(compareTo, 1):
-						case this.quadrantShift(compareTo, 2):
-							//CCW
-							quadrantDiff = 1;
-						break;
-						case this.quadrantShift(compareTo, 3):
-							quadrantDiff = -1;
-						break;
-						case this.quadrantShift(compareTo, 4):
-							console.log("Oop full circle and vvv");
-						default:
-							console.log("Something went wrong");
-					}
+					counterClockwise = isBetween;
+				}
+				else if(isBetween != counterClockwise)
+				{
+					console.log("CONCAVE", angleLog, isBetween);
+					return true;
 				}
 			}
-			else
-			{
-				//Fun spinny stuff
-			}
 		}
+		console.log(angleLog, isBetween);
 		return false;
 	}
 
