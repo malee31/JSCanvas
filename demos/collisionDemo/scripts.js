@@ -15,8 +15,13 @@ const testShapes = [
 	["POLY",
 		[1729.0559120073326,2129.0559120073326,1929.0559120073326,2029.0559120073326],
 		[821.3015582034831,921.3015582034831,1071.3015582034832,1521.3015582034832],
+	"#000000"],
+	["POLY",
+		[1793.8955087076076,1993.8955087076076,1993.8955087076076,2193.8955087076074],
+		[857.3235563703024,1257.3235563703024,1057.3235563703024,1157.3235563703024],
 	"#000000"]
 ];
+//Square, Square, Convex Quadrilateral, Concave Quadrilateral, Concave Quadrilateral (Cursor shaped)
 const shiftIncrement = 50;
 var currentTime = -1;
 
@@ -105,3 +110,11 @@ JSCanv.setAction(() => {
 		}
 	}
 });
+
+function concaveTestAll()
+{
+	for(let shape of testShapes)
+	{
+		console.log(Collider.isConcave(Collider.pointSetify(shape[1], shape[2])) ? "Concave" : "Convex");
+	}
+}
